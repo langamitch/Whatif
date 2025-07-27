@@ -385,6 +385,7 @@ input, button {
     margin-top: 30px;
     font-size: 13px;
     font-weight: 500;
+    white-space: pre-line; 
 }
 
 .empty {
