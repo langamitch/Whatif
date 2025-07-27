@@ -409,6 +409,38 @@ input, button {
   color: #777777;
 }
 
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 30px;
+  padding: 0.75rem 1.5rem;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  background-color: #1a1a1a;
+  border: none;
+  border-radius: 70px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.button:hover {
+  background-color: #333;
+}
+
+.icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+
 .top{
   position:absolute;
   
