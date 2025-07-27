@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Suggestion App</title>
+    <link rel="stylesheet" href="index.css">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+</head>
+<body>
+    <nav>
+        
+        <p>WHAT IF&trade;</p>
+        <div class="right" > 
+        <div class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="24" height="24"><path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z" fill="currentColor"></path></svg>
+          
+          <div class="togglebtn"> <button class="toggle"><span class="material-symbols-outlined">
+add
+</span></button>
+          </div></div>
+    </nav>
+    <!-- Hero 2: Gradient + Visual Tags 
+<section class="hero hero-gradient">
+  <div class="content">
+    <h1>The biggest community
+for sharing app ideas</h1>
+    <p>A space to publish app ideas, discover what others are building, and spark collaboration.</p>
+    <div class="cta-buttons">
+    
+<div class="filter">
+    <button class="toggle">Post Idea</button>
+    </div>
+</div>
+    </div>
+  
+
+</div>
+  </div>
+</section>
+-->
+<style>
+.hero-gradient {
+  
+  color: white;
+  text-align: center;
+}
+.hero-gradient h1 {
+  font-size: 2.3rem;
+  margin-bottom: 15px;
+}
+.hero-gradient p {
+  font-size: 1.1rem;
+  color: #cccccc;
+  margin-bottom: 25px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.hero-gradient .btn {
+  padding: 12px 20px;
+  
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+
+
+
+
+}
+.ad-container {
+  position: relative;
+  width: 100%;
+  height: auto;
+  background-image: url('22B4C65C-5164-460C-B6CE-35C3E92A1061.gif');
+  background-size: cover;
+  background-position: center;
+  border-radius: 0;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  color: white;
+  aspect-ratio: 16/9;
+}
+
+.visit-advertiser {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 49px;
+  background-color: var(--clr-glass); /* or rgba(0,0,0,.55) */
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.sponsored {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--clr-glass);       /* or rgba(0,0,0,.55) */
+  padding: 3px 6px;
+  border-radius: 0;
+}
+</style>
+
+<div class="section">
+  <div class="avatars">
+    <img src="avatar1.jpg" />
+    <img src="avatar2.jpg" />
+    <img src="avatar3.jpg" />
+    <img src="avatar4.jpg" />
+  </div>
+  <p class="main-text">1000 people visit <strong>What If</strong> per day</p>
+  <p class="sub-text">Scroll through to see what people say</p>
+</div>
+
+
+<div class="ad-container">
+  <div class="visit-advertiser">Visit Advertiser</div>
+  <div class="sponsored">Sponsored</div>
+</div>
+
+
+
+<div class="container">
+    <div id="search-overlay" class="overlay">
+        <div class="overlay-content">
+            <span class="close-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000">
+                    <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                </svg>
+            </span>
+            <input type="text" id="search-input" placeholder="Search...">
+        </div>
+    </div>
+
+    <div id="form-overlay" class="overlay">
+        <div class="overlay-content">
+            <span class="close-btn">               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000">
+                    <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                </svg>  </span>
+            <p style="font-size:16px; font-weight:500; text-align: center; margin-top:50px;margin-bottom:30px; color:#000;"> 
+    
+    Publish your own next-big-thing.
+  </p>
+<p style="color:#A9A9A9;margin-bottom:30px; text-align:center;font-size:13px;" > Have a brilliant idea for an app? Share it with our community to challange developers to build the application.</p>
+            <form id="suggestion-form">
+                <input style="height:50px;border: 2px solid rgb(217, 217, 217);font-weight: 500; font-family: 'Inter', sans-serif;" type="text" id="name" placeholder="Your Name" required>
+                <textarea style="min-height:120px; border: 2px solid rgb(217, 217, 217); font-weight: 500; font-size: 16px; font-family: 'Inter', sans-serif;" id="suggestion" placeholder="App Suggestion" required></textarea>
+                <input style="height:50px;border:2px solid rgb(217, 217, 217);font-family: 'inter', sans-serif;font-weight: 500;" type="url" id="social-link" placeholder="Social Link" required>
+                <button class="sub" type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+    <div id="post-container" class="post-container"></div>
+    
+
+  
+<div id=" loading-indicator" class="loader"></div
+
+
+    <div id="search-results" class="search-results"></div>
+</div>
+
+<script>/**
+ * Handles the click event for the save button.
+ * Saves (or removes) the post ID in localStorage under the key "savedPosts".
+ *
+ * @param {HTMLElement} button - The button element that was clicked.
+ * @param {string} postId      - The ID of the post to be toggled.
+ */
+function savePost(button, postId) {
+  const STORAGE_KEY = 'savedPosts';
+
+  // 1️⃣  Get the current list from localStorage (defaults to empty array)
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+  // 2️⃣  Toggle the post ID in the list
+  const index = saved.indexOf(postId);
+  if (index === -1) {
+    // Not saved yet → add it
+    saved.push(postId);
+    button.classList.add('saved');
+  } else {
+    // Already saved → remove it
+    saved.splice(index, 1);
+    button.classList.remove('saved');
+  }
+
+  // 3️⃣  Persist the updated list
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+
+  // 4️⃣  (Optional) Debug log
+  console.log('Saved posts:', saved);
+}document.addEventListener('DOMContentLoaded', () => {
+  const saved = JSON.parse(localStorage.getItem('savedPosts')) || [];
+  saved.forEach(id => {
+    const btn = document.querySelector(`[data-post-id="${id}"]`);
+    if (btn) btn.classList.add('saved');
+  });
+});
+</script>
+
+      
+<script type="module" src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,406 @@
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    color: #fff;
+    font-weight: 500;
+}
+
+  
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.loader {
+  display: inline-flex;
+  gap: 10px;
+  margin:auto;
+}
+.loader:before,
+.loader:after {
+  content: "";
+  height: 20px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    linear-gradient(#222 0 0) top/100% 40% no-repeat,
+    radial-gradient(farthest-side,#000 95%,#0000) 50%/8px 8px no-repeat
+    #fff;
+  animation: l7 1.5s infinite alternate ease-in;
+}
+@keyframes l7 {
+  0%,
+  70% {background-size:100% 40%,8px 8px}
+  85% {background-size:100% 120%,8px 8px}
+  100% {background-size:100% 40%,8px 8px}
+}
+
+.section {
+  text-align: center;
+  color: white;
+  background: #111;
+  font-family: 'Inter',sans-serif;
+  padding: 30px 0;
+  width:100%;
+  border: 1px solid white;
+  border-radius:8px;
+  display: none;
+  
+}
+
+.avatars {
+  display: flex;
+  justify-content: center;
+  gap: -10px;
+  margin-bottom: 10px;
+}
+
+.avatars img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #111;
+  margin-left: -10px;
+}
+
+.main-text {
+  font-size: 16px;
+  margin: 0;
+}
+
+.sub-text {
+  font-size: 13px;
+  color: #ccc;
+}
+
+    .ad-container {
+      position: relative;
+      width: 100%;
+      height: auto;
+      background-image: url('22B4C65C-5164-460C-B6CE-35C3E92A1061.gif'); /* replace with your GIF path */
+      background-size: cover;
+      background-position: center;
+      border-radius: 0px;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      font-weight:500;
+      color: white;
+      aspect-ratio: 16/9;
+    } 
+
+    .visit-advertiser {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 49px;
+      background-color: var(--clr-glass);
+      cursor: pointer;
+      font-weight:600;
+    }
+
+    .sponsored {
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      font-size: 12px;
+      font-weight:600;
+      background: var(--clr-glass);
+      padding: 3px 6px;
+      border-radius: 0px;
+    }
+  
+:root {
+  --clr-bg: #000;        /* pure black */
+  --clr-text: #fff;      /* white text */
+  --clr-muted: #888;     /* muted gray for sub-copy */
+  --clr-glass: rgba(255,255,255,.08); /* frosted glass btn */
+  --btn-hover: rgba(255,255,255,.16);
+}
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+
+}
+.container{
+padding:10px;
+
+}
+nav {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: #000;
+}
+nav p{
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.search-icon {
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+}
+#search-input input:focus{
+  outline:none;
+}
+.rotate-45 {
+  transform: rotate(-45deg);
+}
+.togglebtn {
+  background: #fff;
+  padding: 0px 10px;
+  }
+  
+.right .search-icon, .right .togglebtn{
+  display: flex;
+  flex-direction:  row;
+  gap:20px;
+  align-items: center;
+  }
+  
+.toggle {
+    background-color: transparent;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle:hover {
+    background-color: #333333;}
+    
+    /* Styling for the action button section */
+.post-actions {
+  display: flex;
+  justify-content: flex-end; /* This aligns buttons to the right */
+  align-items: center;
+  gap: 8px; /* This creates space between the buttons */
+  margin-top: 5px;
+}
+
+.action-btn {
+  background: #141414;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  
+}
+
+.action-btn:hover {
+  background-color: #3a3a3a;
+  color: #fff;
+}
+
+.action-btn:active {
+  transform: scale(0.92);
+}
+
+/* Add this class with JS to show a button is "liked" */
+.action-btn.active {
+    color: #f44336;
+}
+
+/* Add this class with JS to show a post is "saved" */
+.save-btn.saved {
+  color: #fccc2d;
+}
+
+    
+.sort-section {
+    text-align: center;
+}
+
+.sort-label {
+    color: #D3D3D3;
+    font-size: 16px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.sort-label::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #808080;
+}
+
+.sort-options {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.sort-option {
+    background-color: #1A1A1A;
+    color: #D3D3D3;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.sort-option:hover {
+    background-color: #2A2A2A;
+}
+
+.sort-option.active {
+    background-color: #2A2A2A;
+}
+
+.sort-option::before {
+    content: attr(data-check);
+    margin-right: 5px;
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+    height: 100%;
+   
+      background-color: rgba(0, 0, 0, 0.079);
+  backdrop-filter: blur(3px) saturate(180%);
+  -webkit-backdrop-filter: blur(3px) saturate(180%);
+}
+
+.overlay-content {
+    position: absolute;
+    
+    left: 50%;
+    width: 100%;
+    transform: translate(-50%, 0);
+    background-color: white;
+    padding: 12px 20px;
+   
+}
+
+.overlay-content input{
+    border: none;
+    width:100%;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+#suggestion-form input{
+    height: 50px;
+}
+
+.sub{
+    margin-top:30px;
+    padding: 20px 17px 20px 15px;
+    border-radius:89px;
+    background-color:#000;
+    border:none;
+    color: #fff;
+}
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+input, textarea {
+    padding: 10px;
+    font-weight: 500;
+    font-size: 16px;
+    border-radius:18px;
+}
+input, button {
+    font-weight: 500;
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+.post-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 20px;
+}
+
+.post-card {
+    width: 350px;
+    
+    
+  
+    overflow: hidden;
+}
+
+.profile {
+    background-color: transparent;
+    padding: 10px;
+    cursor: pointer;
+}
+.profilepic{
+  display: none;
+    height: 30px;
+    width:30px;
+    background: var(--clr-muted);
+    border-radius: 40px;
+}
+
+.top{
+  position:absolute;
+  
+  text-transform: uppercase;
+  color: var(--clr-muted);
+  margin-bottom: 20px;
+    display: flex-end;
+    flex-direction: row;
+    font-size: 13px;
+    font-weight:500;
+}
+
+.content {
+    background-color: #141414;
+    padding: 10px;
+    margin-top: 30px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.empty {
+  
+    padding: 10px;
+    height: 50px;
+}
+
+.search-results {
+    display: none;
+    padding: 20px;
+    background-color: #f9f9f9;
+    margin-top: 20px;
+}
+
+.search-results.active {
+    display: block;
+    z-index:9998;
+}
