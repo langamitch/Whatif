@@ -204,7 +204,6 @@ async function searchPosts() {
             </div>
           `;
           searchResults.appendChild(postCard);
-          addViewMoreLogic(postCard);
         }
       });
       postContainer.style.display = "none";

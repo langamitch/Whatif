@@ -678,8 +678,10 @@ button {
   background: #ccc;
 }
 
-
- .status-button {
+.view-more-btn{
+  display: none;
+}
+ .status-button  {
       position: fixed;
       bottom: 20px;
       left: 20px;

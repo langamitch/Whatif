@@ -210,7 +210,7 @@ for sharing app ideas</h1>
  *
  * @param {HTMLElement} button - The button element that was clicked.
  * @param {string} postId      - The ID of the post to be toggled.
- */
+ 
 function savePost(button, postId) {
   const STORAGE_KEY = 'savedPosts';
 
@@ -241,6 +241,70 @@ function savePost(button, postId) {
     if (btn) btn.classList.add('saved');
   });
 });
+
+*/
+// ... existing code ...
+function getSavedPosts() {
+  return JSON.parse(localStorage.getItem('savedPosts') || '[]');
+}
+function setSavedPosts(arr) {
+  localStorage.setItem('savedPosts', JSON.stringify(arr));
+}
+function getLikedPosts() {
+  return JSON.parse(localStorage.getItem('likedPosts') || '[]');
+}
+function setLikedPosts(arr) {
+  localStorage.setItem('likedPosts', JSON.stringify(arr));
+}
+
+function likePost(button, postId) {
+  let liked = getLikedPosts();
+  if (liked.includes(postId)) {
+    liked = liked.filter(id => id !== postId);
+    button.classList.remove('active');
+  } else {
+    liked.push(postId);
+    button.classList.add('active');
+  }
+  setLikedPosts(liked);
+}
+
+function savePost(button, postId) {
+  let saved = getSavedPosts();
+  if (saved.includes(postId)) {
+    saved = saved.filter(id => id !== postId);
+    button.classList.remove('saved');
+  } else {
+    saved.push(postId);
+    button.classList.add('saved');
+  }
+  setSavedPosts(saved);
+}
+
+function setInitialLikeSaveState(postCard, postId) {
+  const likeBtn = postCard.querySelector('.action-btn[aria-label="Like"]');
+  const saveBtn = postCard.querySelector('.action-btn.save-btn[aria-label="Save"]');
+  if (likeBtn && getLikedPosts().includes(postId)) {
+    likeBtn.classList.add('active');
+  }
+  if (saveBtn && getSavedPosts().includes(postId)) {
+    saveBtn.classList.add('saved');
+  }
+}
+
+// Update listenForPosts and searchPosts to call setInitialLikeSaveState after creating postCard
+// ... existing code ...
+// In listenForPosts, after postContainer.appendChild(postCard):
+// postContainer.appendChild(postCard);
+// addViewMoreLogic(postCard);
+// setInitialLikeSaveState(postCard, postId);
+// ...
+// In searchPosts, after searchResults.appendChild(postCard):
+// searchResults.appendChild(postCard);
+// addViewMoreLogic(postCard);
+// setInitialLikeSaveState(postCard, postId);
+// ... existing code ...
+
 </script>
 
       
