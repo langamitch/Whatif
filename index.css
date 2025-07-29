@@ -434,6 +434,9 @@ button {
   box-sizing: border-box;
 }
 
+.form-control select disabled {
+  color: #9999;
+}
 .form-control select {
   background-color: #1e1e1e;
   color: #fff;
