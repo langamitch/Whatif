@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Read Tracker</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 20px;
+        }
+        .simulation-controls button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .simulation-controls button:hover {
+            background-color: #2980b9;
+        }
+        #chart-container {
+            position: relative;
+            height: 40vh;
+            width: 100%;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <h1>📚 Document Read Tracker</h1>
+
+    <div class="container">
+        <h2>Simulate Document Reads</h2>
+        <p>Click these buttons to simulate a user reading a document. Each click adds a new entry to the 'readLogs' collection in Firestore, and the chart below will update in real-time.</p>
+        <div class="simulation-controls">
+            <button id="readDocA">Read Article A</button>
+            <button id="readDocB">Read Article B</button>
+            <button id="readDocC">Read Article C</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Reads Per Day (Live)</h2>
+        <div id="chart-container">
+            <canvas id="readsChart"></canvas>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import functions from the Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, query, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // --- 1. FIREBASE CONFIGURATION ---
+        // TODO: Replace with your project's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- 2. LOGGING DOCUMENT READS ---
+        
+        /**
+         * Logs a read event to the 'readLogs' collection in Firestore.
+         * @param {string} documentId The ID of the document that was read.
+         */
+        const logRead = async (documentId) => {
+            try {
+                // Add a new document with a generated ID to the "readLogs" collection.
+                const docRef = await addDoc(collection(db, "readLogs"), {
+                    docId: documentId,
+                    timestamp: serverTimestamp(), // Use server time for accuracy
+                    // userId: "some-user-id" // Optional: add if you have auth
+                });
+                console.log(`Read logged with ID: ${docRef.id} for document: ${documentId}`);
+            } catch (e) {
+                console.error("Error adding document to readLogs: ", e);
+            }
+        };
+
+        // Add event listeners to the simulation buttons
+        document.getElementById('readDocA').addEventListener('click', () => logRead('Article A'));
+        document.getElementById('readDocB').addEventListener('click', () => logRead('Article B'));
+        document.getElementById('readDocC').addEventListener('click', () => logRead('Article C'));
+
+        // --- 3. CHART DISPLAY LOGIC ---
+
+        let readsChart; // This variable will hold our chart instance
+
+        // Get the canvas context
+        const ctx = document.getElementById('readsChart').getContext('2d');
+
+        // Create a query to get all documents from the 'readLogs' collection
+        const q = query(collection(db, "readLogs"));
+
+        // Set up a real-time listener
+        onSnapshot(q, (querySnapshot) => {
+            const readsPerDay = {};
+
+            // Process each document in the snapshot
+            querySnapshot.forEach((doc) => {
+                const log = doc.data();
+                // Firestore timestamps can be null briefly while the server sets them.
+                // We check if the timestamp exists before processing.
+                if (log.timestamp) {
+                    const date = log.timestamp.toDate().toISOString().split('T')[0]; // Format as 'YYYY-MM-DD'
+                    readsPerDay[date] = (readsPerDay[date] || 0) + 1;
+                }
+            });
+
+            console.log("Aggregated data:", readsPerDay);
+            updateChart(readsPerDay);
+        });
+
+        /**
+         * Creates or updates the Chart.js graph.
+         * @param {object} aggregatedData - An object with dates as keys and read counts as values.
+         */
+        function updateChart(aggregatedData) {
+            // Sort keys (dates) to ensure the chart's X-axis is chronological
+            const labels = Object.keys(aggregatedData).sort();
+            const dataPoints = labels.map(label => aggregatedData[label]);
+
+            // If the chart instance already exists, update its data and refresh
+            if (readsChart) {
+                readsChart.data.labels = labels;
+                readsChart.data.datasets[0].data = dataPoints;
+                readsChart.update();
+            } 
+            // Otherwise, create a new chart instance
+            else {
+                readsChart = new Chart(ctx, {
+                    type: 'bar', // You can change this to 'line'
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '# of Reads per Day',
+                            data: dataPoints,
+                            backgroundColor: 'rgba(52, 152, 219, 0.5)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    // Ensure y-axis ticks are integers
+                                    precision: 0
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+
+</body>
+</html>
