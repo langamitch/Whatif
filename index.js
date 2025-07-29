@@ -110,6 +110,7 @@ function listenForPosts() {
         `;
 
         postContainer.appendChild(postCard);
+        addViewMoreLogic(postCard);
       });
     },
     (error) => {
@@ -203,6 +204,7 @@ async function searchPosts() {
             </div>
           `;
           searchResults.appendChild(postCard);
+          addViewMoreLogic(postCard);
         }
       });
       postContainer.style.display = "none";
@@ -245,6 +247,38 @@ if (searchCloseBtn) {
 // ===================================================================
 //  END OF FUNCTIONS
 // ===================================================================
+
+function addViewMoreLogic(postCard, contentSelector = ".content") {
+  const contentDiv = postCard.querySelector(contentSelector);
+  if (!contentDiv) return;
+
+  // Wait for DOM to render so we can measure height
+  setTimeout(() => {
+    if (contentDiv.scrollHeight > 350) {
+      // 350px is a good threshold for text
+      // Add fade-out effect
+      const fade = document.createElement("div");
+      fade.className = "fade-out";
+      postCard.appendChild(fade);
+
+      // Add view more button
+      const btn = document.createElement("button");
+      btn.className = "view-more-btn";
+      btn.textContent = "View more details";
+      postCard.appendChild(btn);
+
+      btn.addEventListener("click", () => {
+        if (postCard.classList.contains("expanded")) {
+          postCard.classList.remove("expanded");
+          btn.textContent = "View more details";
+        } else {
+          postCard.classList.add("expanded");
+          btn.textContent = "View less";
+        }
+      });
+    }
+  }, 0);
+}
 
 // --- Initialize Firebase ---
 // This block runs immediately. Now it can safely call listenForPosts().
