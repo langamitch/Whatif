@@ -61,26 +61,42 @@ onSnapshot(q, (querySnapshot) => {
 function renderChart() {
     const aggregatedData = {};
 
-    // Aggregate data based on the current view
-    allLogs.forEach(log => {
-        const d = log.timestamp;
-        let key;
-        if (currentView === 'hourly') {
-            // Key: YYYY-MM-DD HH:00
-            key = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')} ${d.getHours().toString().padStart(2, '0')}:00`;
-        } else if (currentView === 'monthly') {
-            // Key: YYYY-MM
-            key = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
-        } else { // daily
-            // Key: YYYY-MM-DD
-            key = d.toISOString().split('T')[0];
+    if (currentView === 'hourly') {
+        // 1. Create a template for the last 24 hours with 0 reads
+        const now = new Date();
+        for (let i = 0; i < 24; i++) {
+            const hour = new Date(now.getTime() - i * 60 * 60 * 1000);
+            const key = `${hour.getFullYear()}-${(hour.getMonth() + 1).toString().padStart(2, '0')}-${hour.getDate().toString().padStart(2, '0')} ${hour.getHours().toString().padStart(2, '0')}:00`;
+            aggregatedData[key] = 0;
         }
-        aggregatedData[key] = (aggregatedData[key] || 0) + 1;
-    });
+
+        // 2. Fill in the template with actual read data
+        allLogs.forEach(log => {
+            const d = log.timestamp;
+            const key = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')} ${d.getHours().toString().padStart(2, '0')}:00`;
+            // Only increment if the log is from the last 24 hours
+            if (key in aggregatedData) {
+                aggregatedData[key]++;
+            }
+        });
+
+    } else {
+        // Logic for 'daily' and 'monthly' views
+        allLogs.forEach(log => {
+            const d = log.timestamp;
+            let key;
+            if (currentView === 'monthly') {
+                key = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+            } else { // daily
+                key = d.toISOString().split('T')[0];
+            }
+            aggregatedData[key] = (aggregatedData[key] || 0) + 1;
+        });
+    }
 
     const labels = Object.keys(aggregatedData).sort();
     const dataPoints = labels.map(label => aggregatedData[label]);
-
+    
     // Find High and Low points for special styling
     const maxReads = Math.max(...dataPoints, 0);
     const minReads = Math.min(...dataPoints, Infinity);
@@ -92,9 +108,9 @@ function renderChart() {
 
     // Create gradient fill
     const gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.clientHeight);
-    gradient.addColorStop(0, 'rgba(255, 193, 7, 0.6)');    // Yellow/Orange
-    gradient.addColorStop(0.7, 'rgba(0, 150, 199, 0.3)'); // Blue
-    gradient.addColorStop(1, 'rgba(0, 150, 199, 0)');     // Transparent
+    gradient.addColorStop(0, 'rgba(255, 193, 7, 0.6)');
+    gradient.addColorStop(0.7, 'rgba(0, 150, 199, 0.3)');
+    gradient.addColorStop(1, 'rgba(0, 150, 199, 0)');
 
     const chartData = {
         labels: labels,
@@ -103,9 +119,9 @@ function renderChart() {
             data: dataPoints,
             fill: true,
             backgroundColor: gradient,
-            borderColor: 'rgba(251, 191, 36, 1)', // Bright yellow line
+            borderColor: 'rgba(251, 191, 36, 1)',
             borderWidth: 2,
-            tension: 0.4, // For smooth curves
+            tension: 0.4,
             pointRadius: pointRadius,
             pointBorderWidth: pointBorderWidth,
             pointBackgroundColor: '#1c1c1e',
