@@ -2,45 +2,31 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    match /posts/{postId} {
-      // Allow anyone to read posts
-      allow read: if true;
-
-      // Allow authenticated users to create valid posts
-      allow create: if request.auth != null && isPostDataValid();
+  
+    // Rule for your read tracking collection
+    match /readLogs/{logId} {
       
-      // ✅ CHANGED: Allow authenticated users to update a post ONLY
-      // if they are incrementing the readCount by 1.
-      allow update: if request.auth != null && onlyReadCountIsChanging(postId);
-
-      // Nobody can delete posts
-      allow delete: if false;
+      // Allow anyone to read the logs for the chart
+      allow read: if true;
+      
+      // Allow anyone to create a new log if the data is valid
+      allow create: if isReadLogDataValid();
+      
+      // Prevent logs from being changed or deleted
+      allow update, delete: if false;
     }
 
-    // --- Helper Functions ---
-    function isPostDataValid() {
-      // ... (your existing validation function)
+    // Helper function to validate new log data
+    function isReadLogDataValid() {
       let data = request.resource.data;
-      return data.name is string && data.name.size() > 0 &&
-             data.suggestion is string && data.suggestion.size() > 0 &&
-             data.socialLink is string && data.socialLink.matches('^https?://.*') &&
+      
+      // Ensure the log only contains the expected fields
+      return data.keys().hasOnly(['docId', 'timestamp', 'userId']) &&
+             data.docId is string && data.docId.size() > 0 &&
+             // Ensure the timestamp is being set by the server
              data.timestamp == request.time;
     }
     
-    // ✅ NEW: Helper function to validate the read count update
-    function onlyReadCountIsChanging(postId) {
-      let incomingData = request.resource.data;
-      let existingData = resource.data;
-      
-      // Ensure the readCount field is being incremented by exactly 1
-      let isReadCountIncrement = incomingData.readCount == existingData.readCount + 1;
-      
-      // Ensure no other fields are being changed
-      return isReadCountIncrement &&
-             incomingData.name == existingData.name &&
-             incomingData.suggestion == existingData.suggestion &&
-             incomingData.socialLink == existingData.socialLink;
-    }
+    // Add your other rules (e.g., for 'posts') here...
   }
 }
