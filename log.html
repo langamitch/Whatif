@@ -70,19 +70,10 @@
             height: 45vh;
             width: 100%;
         }
-        .cont1{
-            display: none;
-        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
-    <h1>📚 Document Read Tracker</h1>
-
-    <div class="container cont1">
-        <h2>Simulate Reads</h2>
-        <p>Click these buttons to log a document read. The chart below will update in real-time.</p>
         <div class="simulation-controls">
             <button id="readDocA">Read Article A</button>
             <button id="readDocB">Read Article B</button>
@@ -90,16 +81,7 @@
         </div>
     </div>
 
-    <div class="container">
-        <div class="view-switcher">
-            <button id="hourlyBtn">Hourly</button>
-            <button id="dailyBtn" class="active">Daily</button>
-            <button id="monthlyBtn">Monthly</button>
-        </div>
-        <div id="chart-container">
-            <canvas id="readsChart"></canvas>
-        </div>
-    </div>
+
 
     <script src="tracker.js" type="module"></script>
 
