@@ -1,89 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase Read Tracker</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Website Views & Stats</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #1a1a1a; /* Dark background */
-            color: #f2f2f7;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
+      :root {
+        --text-color: rgb(255, 255, 255);
+        --secondary-text-color: rgb(119, 119, 119);
+      }
+      body {
+        background-color: #000;
+        color: var(--text-color);
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+      a.home-button {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        padding: 10px 20px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--text-color);
+        text-decoration: none;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        transition: background-color 0.3s ease;
+      }
+      a.home-button:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+      .content {
+        max-width: 960px;
+      }
+      h1 {
+        font-size: 16px;
+        font-weight: 600;
+      }
+      p {
+        color: var(--secondary-text-color);
+        font-size: 15px;
+        line-height: 1.4;
+        max-width: 600px;
+        margin: 10px auto 0 auto;
+      }
+      .stats-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        padding: 80px 0;
+      }
+      .stat-item {
+        flex: 1;
+        min-width: 200px;
+      }
+      .stat-number {
+        font-size: 64px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .stat-label {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--secondary-text-color);
+        margin-top: 10px;
+      }
+      /* Responsive styles for smaller screens */
+      @media (max-width: 809px) {
+        .stats-container {
+          flex-direction: column;
+          gap: 40px;
+          padding: 40px 0;
         }
-        h1, h2 {
-            color: #f2f2f7;
-            font-weight: 600;
+        .stat-number {
+          font-size: 32px;
         }
-        .container {
-            background: #000000;
-            padding: 1.5rem 2rem;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 900px;
-            margin-bottom: 20px;
-            
+        .stat-label {
+          font-size: 16px;
         }
-        .simulation-controls button {
-            background-color: #131313;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            margin: 5px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.2s;
-        }
-        .simulation-controls button:hover {
-            background-color: #1f1f1f;
-        }
-        .view-switcher {
-            margin-bottom: 1rem;
-        }
-        .view-switcher button {
-            background-color: transparent;
-            color: #f2f2f7;
-            border: 1px solid #3a3a3c ;
-            padding: 8px 16px;
-            margin: 0 4px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        .view-switcher button:hover {
-            background-color: #4a4a4c;
-        }
-        .view-switcher button.active {
-            background-color: #000000;
-            color: white;
-            font-weight: 500;
-            border: 1px solid white;
-        }
-        #chart-container {
-            position: relative;
-            height: 45vh;
-            width: 100%;
-        }
+      }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-        <div class="simulation-controls">
-            <button id="readDocA">Read Article A</button>
-            <button id="readDocB">Read Article B</button>
-            <button id="readDocC">Read Article C</button>
+  </head>
+  <body>
+    <a href="index.html" class="home-button">← Home</a>
+
+    <div class="content">
+      <h1>All Website Views</h1>
+      <p>
+        Easily explore all your views by category, from hourly snapshots to
+        monthly summaries. Track engagement data for daily, monthly, and hourly
+        reads right here.
+      </p>
+
+      <div class="stats-container">
+        <div class="stat-item">
+          <div id="daily-reads" class="stat-number">0</div>
+          <div class="stat-label">Daily Reads</div>
         </div>
+        <div class="stat-item">
+          <div id="monthly-reads" class="stat-number">0</div>
+          <div class="stat-label">Monthly Reads</div>
+        </div>
+        <div class="stat-item">
+          <div id="hourly-reads" class="stat-number">0</div>
+          <div class="stat-label">Hourly Reads</div>
+        </div>
+      </div>
     </div>
 
+    <script type="module">
+      // Import the necessary functions from the Firebase SDK
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        query,
+        where,
+        getDocs,
+        Timestamp,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+      // --- 1. FIREBASE CONFIGURATION ---
+      // TODO: Replace with your project's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDb2cl7lsypR1ZoqHGD-mKhzN_lnDcyVEQ",
+        authDomain: "website-6a5f1.firebaseapp.com",
+        databaseURL: "https://website-6a5f1-default-rtdb.firebaseio.com",
+        projectId: "website-6a5f1",
+        storageBucket: "website-6a5f1.firebasestorage.app",
+        messagingSenderId: "510903945172",
+        appId: "1:510903945172:web:a5f5120db75c938721f841",
+      };
 
-    <script src="tracker.js" type="module"></script>
+      // --- 2. INITIALIZE FIREBASE & GET FIRESTORE REFERENCE ---
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const logsRef = collection(db, "readLogs");
 
-</body>
+      // --- 3. DOM ELEMENT REFERENCES ---
+      const dailyReadsEl = document.getElementById("daily-reads");
+      const monthlyReadsEl = document.getElementById("monthly-reads");
+      const hourlyReadsEl = document.getElementById("hourly-reads");
+
+      /**
+       * Fetches data from Firestore and updates the stats on the page.
+       */
+      async function updateStats() {
+        if (!dailyReadsEl || !monthlyReadsEl || !hourlyReadsEl) {
+          console.error("Could not find one or more stat elements.");
+          return;
+        }
+
+        try {
+          const now = new Date();
+          const startOfToday = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
+          );
+          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+          const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+
+          // Create queries
+          const dailyQuery = query(
+            logsRef,
+            where("timestamp", ">=", Timestamp.fromDate(startOfToday))
+          );
+          const monthlyQuery = query(
+            logsRef,
+            where("timestamp", ">=", Timestamp.fromDate(startOfMonth))
+          );
+          const hourlyQuery = query(
+            logsRef,
+            where("timestamp", ">=", Timestamp.fromDate(oneHourAgo))
+          );
+
+          // Fetch data in parallel
+          const [dailySnapshot, monthlySnapshot, hourlySnapshot] =
+            await Promise.all([
+              getDocs(dailyQuery),
+              getDocs(monthlyQuery),
+              getDocs(hourlyQuery),
+            ]);
+
+          // Update HTML with counts
+          dailyReadsEl.textContent = dailySnapshot.size.toLocaleString();
+          monthlyReadsEl.textContent = monthlySnapshot.size.toLocaleString();
+          hourlyReadsEl.textContent = hourlySnapshot.size.toLocaleString();
+        } catch (error) {
+          console.error("Error fetching stats from Firestore:", error);
+          dailyReadsEl.textContent = "Err";
+          monthlyReadsEl.textContent = "Err";
+          hourlyReadsEl.textContent = "Err";
+        }
+      }
+
+      // Initial call to update stats when the page loads
+      updateStats();
+    </script>
+  </body>
 </html>
