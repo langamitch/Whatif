@@ -437,6 +437,9 @@ button {
 .form-control select disabled {
   color: #9999;
 }
+#suggestion-word-count{
+  text-align: left;
+}
 .form-control select {
   background-color: #1e1e1e;
   color: #fff;

@@ -350,7 +350,7 @@ if (suggestionTextarea) {
   // Create counter element
   let counter = document.createElement("div");
   counter.id = "suggestion-word-count";
-  counter.style.fontSize = "0.95em";
+  counter.style.fontSize = "0.85em";
   counter.style.color = "#888";
   counter.style.marginTop = "4px";
   suggestionTextarea.parentNode.appendChild(counter);
