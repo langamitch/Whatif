@@ -49,6 +49,7 @@ for sharing app ideas</h1>
     <h1 class="subheadline">Share concepts for apps the world needs—because someone might build them.</h1>
         <div class="button-group">
       <a href="https://magenta-methodologies-901435.framer.app/" class="button" style="background-color: azure; color: #000;">Become a sponsor</a>
+<button class="button trigger-button" id="openPopup">Submit Idea</button>
 
       <a href="https://x.com/@Rxch_010" class="button" target="_blank" rel="noopener noreferrer">
         <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -124,7 +125,34 @@ for sharing app ideas</h1>
   <div class="sponsored">Sponsored</div>
 </div>
 
+        <div class="popup-overlay" id="popupOverlay">
+            <button class="popup-close" id="closePopup" aria-label="Close popup">&times;</button>
+            <div class="popup">
 
+                <div class="popup-header">
+                    <h2>Suggest a Website Idea</h2>
+                    <p>Use the form below to submit your website idea to our community. Add your name, a way to reach you, and a quick description. </p>
+                </div>
+                <form id="submissionForm">
+                    <div class="form-control">
+                        <input type="name" placeholder="Name, Organization, Business, etc" required>
+                    </div>
+                    <div class="form-control">
+                      <label for="Email">Social </label>
+                        <input type="email" placeholder="Email address" required>
+                    </div>
+                    <div class="form-control">
+                        <textarea type="number" placeholder="Your epp idea explanation" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Booking</button>
+                    <div class="success-message" id="successMessage">Thank you for booking a call with base-studios! We're excited to connect with you. Your booking has been successfully received, and a member of our team will be in touch shortly. We appreciate your interest and look forward to learning more about how we can support your goals.</div>
+                </form>
+                <p style="font-size: 13px;
+                color: #888;
+                line-height: 1.5;
+                padding: 0 10px;" class="note">With so many submissions we cannot inform you when to call, nor give you any feedback.</p>
+            </div>
+        </div>
 
 <div class="container">
     <div id="search-overlay" class="overlay">
@@ -137,6 +165,7 @@ for sharing app ideas</h1>
             <input type="text" id="search-input" placeholder="Search...">
         </div>
     </div>
+    <button class="contact-button trigger-button" id="openPopup">Book a call</button>
 
     <div id="form-overlay" class="overlay">
         <div class="overlay-content">

@@ -236,3 +236,22 @@ document
 document
   .querySelector("#form-overlay .close-btn")
   ?.addEventListener("click", () => toggleOverlay(formOverlay));
+
+              const openPopupBtn = document.getElementById('openPopup');
+            const popupOverlay = document.getElementById('popupOverlay');
+            const submissionForm = document.getElementById('submissionForm');
+            const closePopupBtn = document.getElementById('closePopup');
+
+            openPopupBtn.addEventListener('click', () => {
+                popupOverlay.style.display = 'flex';
+            });
+
+            popupOverlay.addEventListener('click', (e) => {
+                if (e.target === popupOverlay) {
+                    popupOverlay.style.display = 'none';
+                }
+            });
+
+            closePopupBtn.addEventListener('click', () => {
+                popupOverlay.style.display = 'none';
+            });
