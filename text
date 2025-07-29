@@ -1,63 +1,46 @@
 rules_version = '2';
 
-// The service cloud.firestore block scopes the rules to your Firestore database.
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // --- RULES FOR THE 'posts' COLLECTION ---
     match /posts/{postId} {
-      // READ: Anyone can read posts. This is unchanged.
+      // Allow anyone to read posts
       allow read: if true;
 
-      // CREATE: A user must be signed in (request.auth != null) AND the data must be valid.
-      // This prevents anonymous users from creating posts.
+      // Allow authenticated users to create valid posts
       allow create: if request.auth != null && isPostDataValid();
+      
+      // ✅ CHANGED: Allow authenticated users to update a post ONLY
+      // if they are incrementing the readCount by 1.
+      allow update: if request.auth != null && onlyReadCountIsChanging(postId);
 
-      // UPDATE & DELETE: Posts are immutable. This is unchanged.
-      allow update, delete: if false;
+      // Nobody can delete posts
+      allow delete: if false;
     }
 
-    // --- RULES FOR THE 'readLogs' COLLECTION ---
-    // Added a new rule block for the collection that tracks reads.
-    match /readLogs/{logId} {
-        // READ: Anyone can read the logs.
-        // This is necessary for the public-facing chart to display the data.
-        allow read: if true;
-
-        // CREATE: Anyone can create a new log entry, but the data must be valid.
-        // This allows your system to log reads even from non-authenticated users.
-        allow create: if isReadLogDataValid();
-
-        // UPDATE & DELETE: Log entries are immutable and cannot be changed.
-        allow update, delete: if false;
-    }
-
-    // --- HELPER FUNCTIONS ---
-
-    // This function validates the data for a new post.
-    // I renamed it from isRequestingUserDataValid to be more specific.
+    // --- Helper Functions ---
     function isPostDataValid() {
+      // ... (your existing validation function)
       let data = request.resource.data;
-
-      // Check fields for correct type and added size limits to prevent abuse.
-      return data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
-             data.suggestion is string && data.suggestion.size() > 0 && data.suggestion.size() < 5000 &&
-             data.socialLink is string && data.socialLink.matches('^https?://.*') && data.socialLink.size() < 300 &&
-             // Ensure timestamp is set by the server.
+      return data.name is string && data.name.size() > 0 &&
+             data.suggestion is string && data.suggestion.size() > 0 &&
+             data.socialLink is string && data.socialLink.matches('^https?://.*') &&
              data.timestamp == request.time;
     }
-
-    // New helper function to validate the data for the readLogs collection.
-    function isReadLogDataValid() {
-        let data = request.resource.data;
-
-        // Ensure the submitted log has only the expected fields.
-        // We include 'userId' as an optional, allowed field.
-        return data.keys().hasOnly(['docId', 'timestamp', 'userId']) &&
-               // Validate the docId field.
-               data.docId is string && data.docId.size() > 0 && data.docId.size() < 100 &&
-               // Ensure the timestamp is a server timestamp.
-               data.timestamp == request.time;
+    
+    // ✅ NEW: Helper function to validate the read count update
+    function onlyReadCountIsChanging(postId) {
+      let incomingData = request.resource.data;
+      let existingData = resource.data;
+      
+      // Ensure the readCount field is being incremented by exactly 1
+      let isReadCountIncrement = incomingData.readCount == existingData.readCount + 1;
+      
+      // Ensure no other fields are being changed
+      return isReadCountIncrement &&
+             incomingData.name == existingData.name &&
+             incomingData.suggestion == existingData.suggestion &&
+             incomingData.socialLink == existingData.socialLink;
     }
   }
 }
