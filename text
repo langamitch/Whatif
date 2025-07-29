@@ -1,32 +1,79 @@
-rules_version = '2';
+<script type="module">
+    // Import the necessary functions from the Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-service cloud.firestore {
-  match /databases/{database}/documents {
-  
-    // Rule for your read tracking collection
-    match /readLogs/{logId} {
-      
-      // Allow anyone to read the logs for the chart
-      allow read: if true;
-      
-      // Allow anyone to create a new log if the data is valid
-      allow create: if isReadLogDataValid();
-      
-      // Prevent logs from being changed or deleted
-      allow update, delete: if false;
+    // --- 1. FIREBASE CONFIGURATION ---
+    // TODO: Replace with your project's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    // --- 2. INITIALIZE FIREBASE & GET FIRESTORE REFERENCE ---
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const logsRef = collection(db, "readLogs");
+
+    // --- 3. DOM ELEMENT SELECTORS ---
+    // These selectors target the number elements based on their container's unique class
+    const dailyReadsEl = document.querySelector('.framer-1bhcc87 h3.framer-text');
+    const monthlyReadsEl = document.querySelector('.framer-gv4al1 h3.framer-text');
+    const hourlyReadsEl = document.querySelector('.framer-3b0jlm h3.framer-text');
+
+    /**
+     * Fetches data and updates the stats on the page.
+     */
+    async function updateStats() {
+        if (!dailyReadsEl || !monthlyReadsEl || !hourlyReadsEl) {
+            console.error("Could not find one or more stat elements on the page.");
+            return;
+        }
+
+        try {
+            const now = new Date();
+
+            // --- Calculate Timestamps ---
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+
+            // --- Create Firestore Queries ---
+            const dailyQuery = query(logsRef, where("timestamp", ">=", Timestamp.fromDate(startOfToday)));
+            const monthlyQuery = query(logsRef, where("timestamp", ">=", Timestamp.fromDate(startOfMonth)));
+            const hourlyQuery = query(logsRef, where("timestamp", ">=", Timestamp.fromDate(oneHourAgo)));
+
+            // --- Fetch Data in Parallel ---
+            const [dailySnapshot, monthlySnapshot, hourlySnapshot] = await Promise.all([
+                getDocs(dailyQuery),
+                getDocs(monthlyQuery),
+                getDocs(hourlyQuery)
+            ]);
+
+            // --- Get Counts ---
+            const dailyCount = dailySnapshot.size;
+            const monthlyCount = monthlySnapshot.size;
+            const hourlyCount = hourlySnapshot.size;
+
+            // --- Update the HTML ---
+            dailyReadsEl.textContent = dailyCount.toLocaleString();
+            monthlyReadsEl.textContent = monthlyCount.toLocaleString();
+            hourlyReadsEl.textContent = hourlyCount.toLocaleString();
+
+        } catch (error) {
+            console.error("Error fetching stats from Firestore:", error);
+            // Optionally update the UI to show an error
+            dailyReadsEl.textContent = "Error";
+            monthlyReadsEl.textContent = "Error";
+            hourlyReadsEl.textContent = "Error";
+        }
     }
 
-    // Helper function to validate new log data
-    function isReadLogDataValid() {
-      let data = request.resource.data;
-      
-      // Ensure the log only contains the expected fields
-      return data.keys().hasOnly(['docId', 'timestamp', 'userId']) &&
-             data.docId is string && data.docId.size() > 0 &&
-             // Ensure the timestamp is being set by the server
-             data.timestamp == request.time;
-    }
-    
-    // Add your other rules (e.g., for 'posts') here...
-  }
-}
+    // Run the function when the page loads
+    updateStats();
+
+</script>
