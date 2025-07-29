@@ -68,9 +68,21 @@ function listenForPosts() {
         return;
       }
 
-      snapshot.forEach((doc) => {
-        const post = doc.data();
-        const postId = doc.id;
+      // 🔁 Convert snapshot to array and shuffle
+      const docsArray = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // 🔀 Fisher-Yates shuffle
+      for (let i = docsArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [docsArray[i], docsArray[j]] = [docsArray[j], docsArray[i]];
+      }
+
+      // 🎴 Render shuffled posts
+      docsArray.forEach((post) => {
+        const postId = post.id;
         const postCard = document.createElement("div");
 
         postCard.className = "post-card";
@@ -102,9 +114,9 @@ function listenForPosts() {
             <button class="action-btn save-btn" onclick="window.open('${
               post.socialLink || "#"
             }', '_blank')" aria-label="Open link">
-                <svg class="rotate-45" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
-                    <path d="M665.08-450H180v-60h485.08L437.23-737.85 480-780l300 300-300 300-42.77-42.15L665.08-450Z"/>
-                </svg>
+              <svg class="rotate-45" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+                <path d="M665.08-450H180v-60h485.08L437.23-737.85 480-780l300 300-300 300-42.77-42.15L665.08-450Z"/>
+              </svg>
             </button>
           </div>
         `;
@@ -115,7 +127,6 @@ function listenForPosts() {
     },
     (error) => {
       console.error("Error fetching posts:", error);
-      // Also hide the loading indicator in case of an error
       if (loadingIndicator) {
         loadingIndicator.style.display = "none";
       }
@@ -124,6 +135,7 @@ function listenForPosts() {
     }
   );
 }
+
 
 /**
  * Handles the click event for the like button.
