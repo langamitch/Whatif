@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #1c1c1e; /* Dark background */
+            background-color: #1a1a1a; /* Dark background */
             color: #f2f2f7;
             display: flex;
             flex-direction: column;
@@ -20,7 +20,7 @@
             font-weight: 600;
         }
         .container {
-            background: #2c2c2e;
+            background: #000000;
             padding: 1.5rem 2rem;
             border-radius: 12px;
             width: 100%;
@@ -29,7 +29,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .simulation-controls button {
-            background-color: #007aff;
+            background-color: #131313;
             color: white;
             border: none;
             padding: 10px 15px;
@@ -40,18 +40,18 @@
             transition: background-color 0.2s;
         }
         .simulation-controls button:hover {
-            background-color: #0a84ff;
+            background-color: #1f1f1f;
         }
         .view-switcher {
             margin-bottom: 1rem;
         }
         .view-switcher button {
-            background-color: #3a3a3c;
+            background-color: transparent;
             color: #f2f2f7;
-            border: 1px solid transparent;
+            border: 1px solid #3a3a3c ;
             padding: 8px 16px;
             margin: 0 4px;
-            border-radius: 8px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
             transition: all 0.2s;
@@ -60,9 +60,10 @@
             background-color: #4a4a4c;
         }
         .view-switcher button.active {
-            background-color: #007aff;
+            background-color: #000000;
             color: white;
-            font-weight: 600;
+            font-weight: 500;
+            border: 1px solid white;
         }
         #chart-container {
             position: relative;
