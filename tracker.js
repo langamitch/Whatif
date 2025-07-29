@@ -5,13 +5,12 @@ import { getFirestore, collection, addDoc, serverTimestamp, query, onSnapshot } 
 // --- 1. FIREBASE CONFIGURATION ---
 // TODO: Replace with your project's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDb2cl7lsypR1ZoqHGD-mKhzN_lnDcyVEQ",
-  authDomain: "website-6a5f1.firebaseapp.com",
-  databaseURL: "https://website-6a5f1-default-rtdb.firebaseio.com",
-  projectId: "website-6a5f1",
-  storageBucket: "website-6a5f1.firebasestorage.app",
-  messagingSenderId: "510903945172",
-  appId: "1:510903945172:web:a5f5120db75c938721f841",
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
 };
 
 // Initialize Firebase
