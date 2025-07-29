@@ -48,11 +48,11 @@ for sharing app ideas</h1>
     <h1 class="headline">Bring new app ideas to life.</h1>
     <h1 class="subheadline">Share concepts for apps the world needs—because someone might build them.</h1>
         <div class="button-group">
-      <a href="https://magenta-methodologies-901435.framer.app/" class="button" style="background-color: azure; color: #000;">Become a sponsor</a>
-<button class="button trigger-button" id="openPopup">Submit Idea</button>
+
+<button class="button trigger-button" id="openPopup">Submit an idea</button>
 
       <a href="https://x.com/@Rxch_010" class="button" target="_blank" rel="noopener noreferrer">
-        <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <svg class="icon" viewBox="0 0 24 24" width="16" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
           <path d="M20.39 3H17.58L12.9 9.42 8.88 3H3.67L10.29 13.37 3 21H6.42L11.58 14.94 16.02 21H21L13.97 10.01 20.39 3ZM7.5 4.5L14.5 15.5H12.5L5.5 4.5H7.5ZM16.5 19.5L9.5 8.5H11.5L18.5 19.5H16.5Z" />
         </svg>
         
@@ -131,26 +131,23 @@ for sharing app ideas</h1>
 
                 <div class="popup-header">
                     <h2>Suggest a Website Idea</h2>
-                    <p>Use the form below to submit your website idea to our community. Add your name, a way to reach you, and a quick description. </p>
+                    <p>Use the form below to submit your website idea to our community. Add your name, a social media link, and a quick description of your idea. </p>
                 </div>
-                <form id="submissionForm">
+                <form id="suggestion-form">
                     <div class="form-control">
-                        <input type="name" placeholder="Name, Organization, Business, etc" required>
+                        <input  type="text" id="name" placeholder="Your name, Organization, Business, etc" required>
                     </div>
                     <div class="form-control">
-                      <label for="Email">Social </label>
-                        <input type="email" placeholder="Email address" required>
+                      
+                        <input type="url" id="social-link" placeholder="Social link" required>
                     </div>
                     <div class="form-control">
-                        <textarea type="number" placeholder="Your epp idea explanation" required></textarea>
+                        <textarea id="suggestion" placeholder="Your epp idea explanation" required></textarea>
                     </div>
-                    <button type="submit" class="submit-btn">Submit Booking</button>
+                    <button type="submit" class="submit-btn">Submit idea</button>
                     <div class="success-message" id="successMessage">Thank you for booking a call with base-studios! We're excited to connect with you. Your booking has been successfully received, and a member of our team will be in touch shortly. We appreciate your interest and look forward to learning more about how we can support your goals.</div>
                 </form>
-                <p style="font-size: 13px;
-                color: #888;
-                line-height: 1.5;
-                padding: 0 10px;" class="note">With so many submissions we cannot inform you when to call, nor give you any feedback.</p>
+                
             </div>
         </div>
 
@@ -165,9 +162,9 @@ for sharing app ideas</h1>
             <input type="text" id="search-input" placeholder="Search...">
         </div>
     </div>
-    <button class="contact-button trigger-button" id="openPopup">Book a call</button>
+    
 
-    <div id="form-overlay" class="overlay">
+ <!--   <div id="form-overlay" class="overlay">
         <div class="overlay-content">
             <span class="close-btn">               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000">
                     <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
@@ -184,7 +181,7 @@ for sharing app ideas</h1>
                 <button class="sub" type="submit">Submit</button>
             </form>
         </div>
-    </div>
+    </div>-->
 
 </div>
 
