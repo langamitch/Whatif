@@ -434,6 +434,22 @@ button {
   box-sizing: border-box;
 }
 
+.form-control select {
+  background-color: #1e1e1e;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  appearance: none; /* removes native styles (works in most browsers) */
+}
+
+option {
+  background-color: #1e1e1e;
+  color: #fff;
+  padding: 10px;
+}
+
 .form-control input::placeholder .form-control textarea::placeholder {
   color: #ffffff;
 }
