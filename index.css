@@ -423,7 +423,7 @@ button {
 }
 
 .form-control input,
-.form-control textarea {
+.form-control textarea, .form-control select  {
   width: 100%;
   padding: 10px 5px;
   border-radius: 6px;

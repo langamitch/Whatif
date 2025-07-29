@@ -297,24 +297,37 @@ try {
 // --- Event Listeners ---
 suggestionForm?.addEventListener("submit", async (e) => {
   e.preventDefault();
+
   const name = document.getElementById("name")?.value.trim();
   const suggestion = document.getElementById("suggestion")?.value.trim();
   const socialLink = document.getElementById("social-link")?.value.trim();
+  const category = document.getElementById("category")?.value;
   const submitBtn = suggestionForm.querySelector(".submit-btn");
+
   if (submitBtn) {
     submitBtn.disabled = true;
     const originalText = submitBtn.textContent;
     submitBtn.textContent = "Submitting...";
+
     try {
-      if (name && suggestion && socialLink && /^https?:\/\//.test(socialLink)) {
+      if (
+        name &&
+        suggestion &&
+        socialLink &&
+        category &&
+        /^https?:\/\//.test(socialLink)
+      ) {
         await addDoc(postsRef, {
           name: name,
           suggestion: suggestion,
           socialLink: socialLink,
+          category: category,
           timestamp: serverTimestamp(),
         });
+
         suggestionForm.reset();
         if (formOverlay) formOverlay.style.display = "none";
+
         alert("Suggestion submitted successfully!");
       } else {
         alert(
@@ -330,6 +343,7 @@ suggestionForm?.addEventListener("submit", async (e) => {
     }
   }
 });
+
 
 searchInput?.addEventListener("keyup", searchPosts);
 
