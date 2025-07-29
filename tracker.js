@@ -108,7 +108,7 @@ function renderChart() {
 
     // Create gradient fill
     const gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.clientHeight);
-    gradient.addColorStop(0, 'rgba(255, 193, 7, 0.6)');
+    gradient.addColorStop(0, 'rgba(255, 127, 7, 0.6)');
     gradient.addColorStop(0.7, 'rgba(0, 150, 199, 0.3)');
     gradient.addColorStop(1, 'rgba(0, 150, 199, 0)');
 
