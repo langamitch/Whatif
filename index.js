@@ -440,3 +440,13 @@ popupOverlay.addEventListener("click", (e) => {
 closePopupBtn.addEventListener("click", () => {
   popupOverlay.style.display = "none";
 });
+
+const loadingOverlay = document.getElementById("loading-overlay");
+if (loadingOverlay) {
+  loadingOverlay.style.display = "flex"; // Show full-screen overlay
+}
+
+// later when posts are loaded or on error
+if (loadingOverlay) {
+  loadingOverlay.style.display = "none"; // Hide overlay
+}

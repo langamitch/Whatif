@@ -219,7 +219,35 @@ for sharing app ideas</h1>
     
 
   
-<div id=" loading-indicator" class="loader"></div
+<!--<div id=" loading-indicator" class="loader"></div-->
+
+  <div id="loading-indicator" style="display: none; text-align: center; margin: 2rem 0;">
+  <div class="spinner"></div>
+  <span>Loading posts...</span>
+</div>
+
+<div id="loading-overlay">
+  <div class="loader"></div>
+  <p>Loading posts...</p>
+</div>
+
+
+<style>
+  .spinner {
+    margin: 0 auto 10px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #333;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
 
 
     <div id="search-results" class="search-results"></div>
