@@ -344,6 +344,56 @@ suggestionForm?.addEventListener("submit", async (e) => {
   }
 });
 
+// Add word count limit for suggestion textarea
+const suggestionTextarea = document.getElementById("suggestion");
+if (suggestionTextarea) {
+  // Create counter element
+  let counter = document.createElement("div");
+  counter.id = "suggestion-word-count";
+  counter.style.fontSize = "0.95em";
+  counter.style.color = "#888";
+  counter.style.marginTop = "4px";
+  suggestionTextarea.parentNode.appendChild(counter);
+
+  let limitReached = false;
+
+  function updateWordCount() {
+    const words = suggestionTextarea.value.trim().split(/\s+/).filter(Boolean);
+    counter.textContent = `${words.length}/200 words`;
+    if (words.length >= 200) {
+      counter.textContent = "200/200 words (limit reached)";
+      counter.style.color = "#d00";
+      limitReached = true;
+    } else {
+      counter.style.color = "#888";
+      limitReached = false;
+    }
+  }
+
+  suggestionTextarea.addEventListener("input", function (e) {
+    let words = suggestionTextarea.value.trim().split(/\s+/).filter(Boolean);
+    if (words.length > 200) {
+      suggestionTextarea.value = words.slice(0, 200).join(" ");
+      words = suggestionTextarea.value.trim().split(/\s+/).filter(Boolean);
+    }
+    updateWordCount();
+  });
+
+  suggestionTextarea.addEventListener("keydown", function (e) {
+    const allowedKeys = [8, 46, 37, 38, 39, 40]; // backspace, delete, arrows
+    const words = suggestionTextarea.value.trim().split(/\s+/).filter(Boolean);
+    if (
+      words.length >= 200 &&
+      !allowedKeys.includes(e.keyCode) &&
+      !e.ctrlKey &&
+      !e.metaKey
+    ) {
+      e.preventDefault();
+    }
+  });
+
+  updateWordCount();
+}
 
 searchInput?.addEventListener("keyup", searchPosts);
 
