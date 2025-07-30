@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Import Sample Posts to Firestore</title>
+ 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      serverTimestamp,
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDb2cl7lsypR1ZoqHGD-mKhzN_lnDcyVEQ",
+      authDomain: "website-6a5f1.firebaseapp.com",
+      databaseURL: "https://website-6a5f1-default-rtdb.firebaseio.com",
+      projectId: "website-6a5f1",
+      storageBucket: "website-6a5f1.appspot.com",
+      messagingSenderId: "510903945172",
+      appId: "1:510903945172:web:a5f5120db75c938721f841",
+    };
+
+    // Initialize Firebase & Firestore
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const postsRef = collection(db, "posts");
+
+    // Sample posts JSON
+    const samplePosts = [
+
+ 
+  {
+    "name": "Thandi Mokoena",
+    "suggestion": "JobJump is a career coaching app designed specifically for young South Africans entering the workforce. It offers CV-building workshops, interview practice through AI-powered simulations, and local job market insights tailored to various provinces. Users can connect with mentors from their fields and get notified about internships and entry-level jobs nearby. By blending tech with personal development, JobJump aims to reduce youth unemployment and build confidence for the first big career step.",
+    "socialLink": "https://x.com/thandimokoena",
+    "category": "business"
+  },
+  {
+    "name": "Sipho Dlamini",
+    "suggestion": "FarmConnect helps small-scale farmers across South Africa access real-time weather forecasts, market prices, and direct-to-consumer sales platforms. With simple interfaces in multiple local languages, FarmConnect bridges information gaps and empowers farmers to make smarter planting and selling decisions. It also features a community chat to share tips, pest alerts, and seasonal advice. The app is designed to strengthen rural economies and increase food security.",
+    "socialLink": "https://www.instagram.com/siphodlamini_farmconnect",
+    "category": "other"
+  },
+  {
+    "name": "Naledi Kgosi",
+    "suggestion": "WellNest is a mental health companion app tailored for South African communities. It offers access to local therapists, mindfulness exercises, and crisis support resources. Users can journal their moods, set wellness goals, and join culturally sensitive support groups. WellNest combines technology with empathy to break down stigma and make mental health care more accessible and relatable.",
+    "socialLink": "https://x.com/wellnestza",
+    "category": "health-fitness"
+  },
+  {
+    "name": "Kabelo Mthethwa",
+    "suggestion": "CityRide is a smart transport app designed for commuters in South African metros. It integrates minibus taxi routes, bus schedules, and train timetables into a single platform with real-time tracking and payment options. CityRide helps users plan multi-modal trips, estimate costs, and avoid delays. The app aims to modernize and simplify everyday travel while promoting safer and more reliable public transport usage.",
+    "socialLink": "https://www.cityride.co.za",
+    "category": "travel"
+  },
+  {
+    "name": "Zinhle Nkosi",
+    "suggestion": "TasteMates is a social food discovery app celebrating South Africa’s rich culinary diversity. Users share recipes, restaurant reviews, and photos of local dishes from all provinces. The app includes features like cooking challenges, live virtual cook-alongs, and a map highlighting authentic eateries. TasteMates connects food lovers and encourages exploration of both traditional and contemporary South African flavors.",
+    "socialLink": "https://instagram.com/tastemates_za",
+    "category": "food-drink"
+  }
+
+
+
+    ];
+
+    // Import function to add posts to Firestore
+    async function importPosts() {
+      try {
+        for (const post of samplePosts) {
+          await addDoc(postsRef, {
+            ...post,
+            timestamp: serverTimestamp(),
+          });
+          console.log(`Imported post by: ${post.name}`);
+        }
+        alert("All posts imported successfully!");
+      } catch (error) {
+        console.error("Error importing posts:", error);
+        alert("Error importing posts. Check console.");
+      }
+    }
+
+    // Expose importPosts so we can call it on button click
+    window.importPosts = importPosts;
+  </script>
+</head>
+
+<body style="background-color: black; color: rgb(255, 255, 255); font-family: monospace;padding: 10px;">
+  <h1>Import Sample Posts to Firestore</h1>
+  <p>Click the button below to import sample posts into your Firestore database.</p>
+  <button onclick="importPosts()" style="  padding: 8px 5px;
+  border-radius: 5px;
+  border: 1px solid rgb(255, 255, 255);
+  background-color: transparent;
+  color: rgb(255, 255, 255);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+  font-family: monospace;">Import Posts</button>
+</body>
+</html>
