@@ -647,7 +647,8 @@ option {
   display: none;
   padding: 20px;
   background-color: #f9f9f9;
-  margin-top: 75px;
+  margin-top: 73px;
+  border-top: 2px solid #dfdfdf;
 }
 
 .search-results.active {
