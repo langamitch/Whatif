@@ -650,7 +650,7 @@ option {
 
 .search-results.active {
   display: block;
-  z-index: 9998;
+  z-index: 9999999;
 }
 
 #search-results {
