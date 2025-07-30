@@ -601,6 +601,11 @@ option {
     width: 16px;
     height: 16px;
   }
+  #search-results {
+ 
+  padding:10px;
+  
+}
 }
 
 .button:hover {
