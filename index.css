@@ -642,7 +642,7 @@ option {
   display: none;
   padding: 20px;
   background-color: #f9f9f9;
-  margin-top: 20px;
+  margin-top: 75px;
 }
 
 .search-results.active {
@@ -657,10 +657,10 @@ option {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(255, 255, 255, 0.98);
+  background: rgb(255, 255, 255);
   overflow-y: auto;
   z-index: 99999;
-  padding: 40px 0 0 0;
+  padding: 40px 0 0 40px;
   box-sizing: border-box;
 }
 
