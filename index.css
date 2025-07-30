@@ -195,9 +195,7 @@ nav p {
   transition: background-color 0.3s;
 }
 
-.toggle:hover {
-  background-color: #333333;
-}
+
 
 /* Styling for the action button section */
 .post-actions {
@@ -220,7 +218,7 @@ nav p {
 }
 
 .action-btn:hover {
-  background-color: #3a3a3a;
+
   color: #fff;
 }
 
@@ -276,9 +274,7 @@ nav p {
   transition: background-color 0.3s;
 }
 
-.sort-option:hover {
-  background-color: #2a2a2a;
-}
+
 
 .sort-option.active {
   background-color: #2a2a2a;
@@ -417,9 +413,7 @@ button {
   transition: color 0.2s;
 }
 
-.popup-close:hover {
-  color: #000;
-}
+
 
 .popup-header {
   margin-bottom: 20px;
@@ -629,9 +623,7 @@ option {
 }
 }
 
-.button:hover {
-  background-color: #333;
-}
+
 
 .icon {
   display: inline-block;
