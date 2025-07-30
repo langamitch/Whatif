@@ -12,26 +12,45 @@
     />
 </head>
 <body>
- <nav>
-  <p>WHAT IF&trade;</p>
-  
-  <div class="right">
-    <!-- Search Icon -->
-    <div class="search-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="24" height="24">
-        <path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z" fill="currentColor"/>
-      </svg>
-    </div>
+ <!-- Navigation Bar -->
+  <nav>
+    <p>WHAT IF&trade;</p>
+    <div class="right">
+      <div class="search-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="24" height="24">
+          <path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z" fill="currentColor"/>
+        </svg>
+      </div>
 
-    <!-- Toggle Button -->
-    <div class="togglebtn">
-      <button class="toggle" aria-label="Add">
-        <span class="material-symbols-outlined">add</span>
-      </button>
+      <div class="togglebtn">
+        <button class="toggle" aria-label="Toggle Sidebar">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+      </div>
     </div>
+  </nav>
+
+    <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <h2>Sidebar Menu</h2>
+    <ul>
+      <li><a href="#" style="color: white;">Home</a></li>
+      <li><a href="#" style="color: white;">About</a></li>
+      <li><a href="#" style="color: white;">Services</a></li>
+      <li><a href="#" style="color: white;">Contact</a></li>
+    </ul>
   </div>
-</nav>
 
+   <!-- JavaScript for toggle -->
+  <script>
+    const toggleButton = document.querySelector('.toggle');
+    const sidebar = document.getElementById('sidebar');
+
+    toggleButton.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+  </script>
+</body>
 
     
     <!-- Hero 2: Gradient + Visual Tags 
