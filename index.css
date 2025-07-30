@@ -154,6 +154,24 @@ nav p {
 .rotate-45 {
   transform: rotate(-45deg);
 }
+.input {
+  display: flex;
+  align-items: center;
+  gap: 0rem; /* optional spacing between icon and input */
+}
+
+.input svg {
+  color: #999;
+  flex-shrink: 0; /* prevent icon from shrinking */
+}
+
+.input input {
+  flex: 1;
+  outline: none;
+  border-radius: 4px;
+
+}
+
 
 
 .right .search-icon,
