@@ -43,59 +43,65 @@ function extractHashtags(text) {
 
 function highlightHashtags(text) {
   const hashtagRegex = /#[\w\u0590-\u05ff]+/g;
-  return text.replace(hashtagRegex, '<span class="hashtag-highlight">$&</span>');
+  return text.replace(
+    hashtagRegex,
+    '<span class="hashtag-highlight">$&</span>'
+  );
 }
 
 function renderHashtags(hashtags) {
-  if (!hashtags || hashtags.length === 0) return '';
+  if (!hashtags || hashtags.length === 0) return "";
   return `
     <div class="post-hashtags">
-      ${hashtags.map(tag => `<span class="post-hashtag">${tag}</span>`).join('')}
+      ${hashtags
+        .map((tag) => `<span class="post-hashtag">${tag}</span>`)
+        .join("")}
     </div>
   `;
 }
 
 function updateHashtagDisplay(text) {
   const hashtags = extractHashtags(text);
-  const hashtagsDisplay = document.getElementById('extracted-hashtags');
-  const hashtagsContainer = document.getElementById('hashtags-display');
-  
+  const hashtagsDisplay = document.getElementById("extracted-hashtags");
+  const hashtagsContainer = document.getElementById("hashtags-display");
+
   if (hashtagsDisplay && hashtagsContainer) {
     if (hashtags.length > 0) {
-      hashtagsDisplay.innerHTML = hashtags.map(tag => 
-        `<span class="extracted-hashtag">${tag}</span>`
-      ).join('');
-      hashtagsContainer.style.display = 'flex';
+      hashtagsDisplay.innerHTML = hashtags
+        .map((tag) => `<span class="extracted-hashtag">${tag}</span>`)
+        .join("");
+      hashtagsContainer.style.display = "flex";
     } else {
-      hashtagsContainer.style.display = 'none';
+      hashtagsContainer.style.display = "none";
     }
   }
 }
 
 function toggleHashtagSuggestions() {
-  const suggestions = document.getElementById('hashtag-suggestions');
+  const suggestions = document.getElementById("hashtag-suggestions");
   if (suggestions) {
-    suggestions.style.display = suggestions.style.display === 'none' ? 'block' : 'none';
+    suggestions.style.display =
+      suggestions.style.display === "none" ? "block" : "none";
   }
 }
 
 function insertHashtag(tag) {
-  const textarea = document.getElementById('suggestion');
+  const textarea = document.getElementById("suggestion");
   if (textarea) {
     const cursorPos = textarea.selectionStart;
     const textBefore = textarea.value.substring(0, cursorPos);
     const textAfter = textarea.value.substring(cursorPos);
-    
+
     // Add space before hashtag if not at beginning and previous char is not space
-    const spaceBefore = cursorPos > 0 && !textBefore.endsWith(' ') ? ' ' : '';
-    
+    const spaceBefore = cursorPos > 0 && !textBefore.endsWith(" ") ? " " : "";
+
     textarea.value = textBefore + spaceBefore + tag + textAfter;
     textarea.focus();
-    
+
     // Set cursor position after the inserted hashtag
     const newPos = cursorPos + spaceBefore.length + tag.length;
     textarea.setSelectionRange(newPos, newPos);
-    
+
     // Update hashtag display
     updateHashtagDisplay(textarea.value);
   }
@@ -203,7 +209,6 @@ function listenForPosts() {
   );
 }
 
-
 /**
  * Handles the click event for the like button.
  * @param {HTMLElement} button - The button element that was clicked.
@@ -248,9 +253,8 @@ async function searchPosts() {
             post.suggestion.toLowerCase().includes(searchTerm)) ||
           (post.socialLink &&
             post.socialLink.toLowerCase().includes(searchTerm)) ||
-          (post.hashtags && post.hashtags.some(tag => 
-            tag.toLowerCase().includes(searchTerm)
-          ))
+          (post.hashtags &&
+            post.hashtags.some((tag) => tag.toLowerCase().includes(searchTerm)))
         ) {
           found = true;
           const postCard = document.createElement("div");
@@ -262,7 +266,9 @@ async function searchPosts() {
               <div class="profilepic"></div>
               <div class="profile">${post.name || "Unknown"}</div>
             </div>
-            <div class="content">${highlightHashtags(post.suggestion || "")}</div>
+            <div class="content">${highlightHashtags(
+              post.suggestion || ""
+            )}</div>
             ${renderHashtags(post.hashtags)}
             <div class="post-actions">
               <button class="action-btn" onclick="likePost(this, '${postId}')" aria-label="Like">
@@ -481,7 +487,7 @@ if (suggestionTextarea) {
   });
 
   // Show hashtag suggestions when user types #
-  suggestionTextarea.addEventListener("keyup", function(e) {
+  suggestionTextarea.addEventListener("keyup", function (e) {
     const suggestions = document.getElementById("hashtag-suggestions");
     if (e.key === "#" || this.value.includes("#")) {
       if (suggestions) {
@@ -497,16 +503,20 @@ searchInput?.addEventListener("keyup", searchPosts);
 
 // Hashtag functionality event listeners
 // Hide suggestions when clicking outside
-document.addEventListener("click", function(e) {
+document.addEventListener("click", function (e) {
   const suggestions = document.getElementById("hashtag-suggestions");
   const suggestionTextarea = document.getElementById("suggestion");
-  if (suggestions && !suggestions.contains(e.target) && e.target !== suggestionTextarea) {
+  if (
+    suggestions &&
+    !suggestions.contains(e.target) &&
+    e.target !== suggestionTextarea
+  ) {
     suggestions.style.display = "none";
   }
 });
 
 // Add click handlers for hashtag chips
-document.addEventListener("click", function(e) {
+document.addEventListener("click", function (e) {
   if (e.target.classList.contains("hashtag-chip")) {
     const tag = e.target.getAttribute("data-tag");
     insertHashtag(tag);
@@ -514,7 +524,7 @@ document.addEventListener("click", function(e) {
 });
 
 // Add click handlers for post hashtags (for future search functionality)
-document.addEventListener("click", function(e) {
+document.addEventListener("click", function (e) {
   if (e.target.classList.contains("post-hashtag")) {
     const tag = e.target.textContent;
     if (searchInput) {

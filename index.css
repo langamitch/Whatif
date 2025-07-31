@@ -874,9 +874,9 @@ option {
 .hashtag-suggestions {
   margin-top: 10px;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #000000;
+  border-radius: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .suggestion-title {
@@ -899,6 +899,7 @@ option {
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
   font-size: 13px;
+  font-weight: 500;
   color: #fff;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -916,14 +917,20 @@ option {
 
 .hashtags-display {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  align-items: left;
+  gap: 10px;
   margin-top: 8px;
   padding: 12px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
+  background: #1a1a1a;
+  border-radius: 4px;
   border: none;
   min-height: 20px;
+}
+
+.hashtags-display span{
+  align-items: left;
+  text-align: left;
 }
 
 .hashtag-label {
@@ -943,7 +950,7 @@ option {
   display: inline-block;
   padding: 8px 8px;
   background: white;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 10px;
   color: #000;
   font-weight: 500;
@@ -951,19 +958,21 @@ option {
 
 .post-hashtags {
   display: flex;
+  
   flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 2px;
+  margin-top: 4px;
+  
+  right: 0;
+ 
 }
 
 .post-hashtag {
   display: inline-block;
-  padding: 2px 6px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  font-size: 10px;
+  padding: 6px 6px;
+  background: #141414;
+  border-radius: 0px;
+  font-size: 12px;
   color: #fff;
   font-weight: 500;
   cursor: pointer;
