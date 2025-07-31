@@ -35,6 +35,72 @@ const searchResults = document.getElementById("search-results");
 //  ✅ FIX: MOVE ALL FUNCTION DECLARATIONS HERE (BEFORE THEY ARE CALLED)
 // ===================================================================
 
+// Hashtag utility functions
+function extractHashtags(text) {
+  const hashtagRegex = /#[\w\u0590-\u05ff]+/g;
+  return text.match(hashtagRegex) || [];
+}
+
+function highlightHashtags(text) {
+  const hashtagRegex = /#[\w\u0590-\u05ff]+/g;
+  return text.replace(hashtagRegex, '<span class="hashtag-highlight">$&</span>');
+}
+
+function renderHashtags(hashtags) {
+  if (!hashtags || hashtags.length === 0) return '';
+  return `
+    <div class="post-hashtags">
+      ${hashtags.map(tag => `<span class="post-hashtag">${tag}</span>`).join('')}
+    </div>
+  `;
+}
+
+function updateHashtagDisplay(text) {
+  const hashtags = extractHashtags(text);
+  const hashtagsDisplay = document.getElementById('extracted-hashtags');
+  const hashtagsContainer = document.getElementById('hashtags-display');
+  
+  if (hashtagsDisplay && hashtagsContainer) {
+    if (hashtags.length > 0) {
+      hashtagsDisplay.innerHTML = hashtags.map(tag => 
+        `<span class="extracted-hashtag">${tag}</span>`
+      ).join('');
+      hashtagsContainer.style.display = 'flex';
+    } else {
+      hashtagsContainer.style.display = 'none';
+    }
+  }
+}
+
+function toggleHashtagSuggestions() {
+  const suggestions = document.getElementById('hashtag-suggestions');
+  if (suggestions) {
+    suggestions.style.display = suggestions.style.display === 'none' ? 'block' : 'none';
+  }
+}
+
+function insertHashtag(tag) {
+  const textarea = document.getElementById('suggestion');
+  if (textarea) {
+    const cursorPos = textarea.selectionStart;
+    const textBefore = textarea.value.substring(0, cursorPos);
+    const textAfter = textarea.value.substring(cursorPos);
+    
+    // Add space before hashtag if not at beginning and previous char is not space
+    const spaceBefore = cursorPos > 0 && !textBefore.endsWith(' ') ? ' ' : '';
+    
+    textarea.value = textBefore + spaceBefore + tag + textAfter;
+    textarea.focus();
+    
+    // Set cursor position after the inserted hashtag
+    const newPos = cursorPos + spaceBefore.length + tag.length;
+    textarea.setSelectionRange(newPos, newPos);
+    
+    // Update hashtag display
+    updateHashtagDisplay(textarea.value);
+  }
+}
+
 function toggleOverlay(overlay) {
   if (overlay) {
     overlay.style.display =
@@ -94,7 +160,8 @@ function listenForPosts() {
             <div class="profile">${post.name || "Unknown"}</div>
           </div>
 
-          <div class="content">${post.suggestion || ""}</div>
+          <div class="content">${highlightHashtags(post.suggestion || "")}</div>
+          ${renderHashtags(post.hashtags)}
 
           <div class="post-actions">
             <button class="action-btn" onclick="likePost(this, '${postId}')" aria-label="Like">
@@ -180,7 +247,10 @@ async function searchPosts() {
           (post.suggestion &&
             post.suggestion.toLowerCase().includes(searchTerm)) ||
           (post.socialLink &&
-            post.socialLink.toLowerCase().includes(searchTerm))
+            post.socialLink.toLowerCase().includes(searchTerm)) ||
+          (post.hashtags && post.hashtags.some(tag => 
+            tag.toLowerCase().includes(searchTerm)
+          ))
         ) {
           found = true;
           const postCard = document.createElement("div");
@@ -192,7 +262,8 @@ async function searchPosts() {
               <div class="profilepic"></div>
               <div class="profile">${post.name || "Unknown"}</div>
             </div>
-            <div class="content">${post.suggestion || ""}</div>
+            <div class="content">${highlightHashtags(post.suggestion || "")}</div>
+            ${renderHashtags(post.hashtags)}
             <div class="post-actions">
               <button class="action-btn" onclick="likePost(this, '${postId}')" aria-label="Like">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor">
@@ -314,6 +385,7 @@ suggestionForm?.addEventListener("submit", async (e) => {
   const suggestion = document.getElementById("suggestion")?.value.trim();
   const socialLink = document.getElementById("social-link")?.value.trim();
   const category = document.getElementById("category")?.value;
+  const hashtags = extractHashtags(suggestion);
   const submitBtn = suggestionForm.querySelector(".submit-btn");
 
   if (submitBtn) {
@@ -334,6 +406,7 @@ suggestionForm?.addEventListener("submit", async (e) => {
           suggestion: suggestion,
           socialLink: socialLink,
           category: category,
+          hashtags: hashtags,
           timestamp: serverTimestamp(),
         });
 
@@ -382,6 +455,7 @@ if (suggestionTextarea) {
     }
   }
 
+  // Word count functionality
   suggestionTextarea.addEventListener("input", function (e) {
     let words = suggestionTextarea.value.trim().split(/\s+/).filter(Boolean);
     if (words.length > 200) {
@@ -389,6 +463,8 @@ if (suggestionTextarea) {
       words = suggestionTextarea.value.trim().split(/\s+/).filter(Boolean);
     }
     updateWordCount();
+    // Update hashtag display
+    updateHashtagDisplay(this.value);
   });
 
   suggestionTextarea.addEventListener("keydown", function (e) {
@@ -404,10 +480,49 @@ if (suggestionTextarea) {
     }
   });
 
+  // Show hashtag suggestions when user types #
+  suggestionTextarea.addEventListener("keyup", function(e) {
+    const suggestions = document.getElementById("hashtag-suggestions");
+    if (e.key === "#" || this.value.includes("#")) {
+      if (suggestions) {
+        suggestions.style.display = "block";
+      }
+    }
+  });
+
   updateWordCount();
 }
 
 searchInput?.addEventListener("keyup", searchPosts);
+
+// Hashtag functionality event listeners
+// Hide suggestions when clicking outside
+document.addEventListener("click", function(e) {
+  const suggestions = document.getElementById("hashtag-suggestions");
+  const suggestionTextarea = document.getElementById("suggestion");
+  if (suggestions && !suggestions.contains(e.target) && e.target !== suggestionTextarea) {
+    suggestions.style.display = "none";
+  }
+});
+
+// Add click handlers for hashtag chips
+document.addEventListener("click", function(e) {
+  if (e.target.classList.contains("hashtag-chip")) {
+    const tag = e.target.getAttribute("data-tag");
+    insertHashtag(tag);
+  }
+});
+
+// Add click handlers for post hashtags (for future search functionality)
+document.addEventListener("click", function(e) {
+  if (e.target.classList.contains("post-hashtag")) {
+    const tag = e.target.textContent;
+    if (searchInput) {
+      searchInput.value = tag;
+      searchPosts();
+    }
+  }
+});
 
 document
   .querySelector(".search-icon")

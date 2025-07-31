@@ -869,3 +869,112 @@ option {
     .sidebar ul li a{
       text-decoration: none;
     }
+
+/* Hashtag Styles */
+.hashtag-suggestions {
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.suggestion-title {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.hashtag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hashtag-chip {
+  display: inline-block;
+  padding: 4px 8px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-size: 13px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.hashtag-chip:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.hashtag-chip:active {
+  transform: scale(0.95);
+}
+
+.hashtags-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 12px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border: none;
+  min-height: 20px;
+}
+
+.hashtag-label {
+  font-size: 12px;
+  color: #888;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.extracted-hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.extracted-hashtag {
+  display: inline-block;
+  padding: 8px 8px;
+  background: white;
+  border-radius: 8px;
+  font-size: 10px;
+  color: #000;
+  font-weight: 500;
+}
+
+.post-hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.post-hashtag {
+  display: inline-block;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 10px;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.post-hashtag:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.hashtag-highlight {
+  color: #4CAF50;
+  font-weight: 600;
+}

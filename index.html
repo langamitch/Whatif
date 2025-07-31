@@ -170,7 +170,7 @@ for sharing app ideas</h1>
 
                 <div class="popup-header">
                     <h2>Suggest a Website Idea</h2>
-                    <p>Use the form below to submit your app idea to our community. Add your name, a social media link, choose a category of your idea, and a quick description of your idea. </p>
+                    <p>Use the form below to submit your app idea to our community. Add your name, a social media link, choose a category of your idea, and a quick description of your idea. You can also add hashtags to make your idea easier to discover!</p>
                 </div>
                 <form id="suggestion-form">
                     <div class="form-control">
@@ -202,7 +202,28 @@ for sharing app ideas</h1>
     </select>
   </div>
                     <div class="form-control">
-                        <textarea id="suggestion" placeholder="Your epp idea explanation" required></textarea>
+                        <textarea id="suggestion" placeholder="Your app idea explanation (use #hashtags to make it discoverable)" required></textarea>
+                        <div id="hashtag-suggestions" class="hashtag-suggestions" style="display: none;">
+                            <div class="suggestion-title">Popular hashtags:</div>
+                            <div class="hashtag-chips">
+                                <span class="hashtag-chip" data-tag="#business">#business</span>
+                                <span class="hashtag-chip" data-tag="#productivity">#productivity</span>
+                                <span class="hashtag-chip" data-tag="#social">#social</span>
+                                <span class="hashtag-chip" data-tag="#education">#education</span>
+                                <span class="hashtag-chip" data-tag="#health">#health</span>
+                                <span class="hashtag-chip" data-tag="#finance">#finance</span>
+                                <span class="hashtag-chip" data-tag="#entertainment">#entertainment</span>
+                                <span class="hashtag-chip" data-tag="#travel">#travel</span>
+                                <span class="hashtag-chip" data-tag="#food">#food</span>
+                                <span class="hashtag-chip" data-tag="#innovation">#innovation</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-control">
+                        <div class="hashtags-display" id="hashtags-display">
+                            <span class="hashtag-label">Hashtags:</span>
+                            <div class="extracted-hashtags" id="extracted-hashtags"></div>
+                        </div>
                     </div>
                     <button type="submit" class="submit-btn">Submit idea</button>
 
