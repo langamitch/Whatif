@@ -8,7 +8,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-  <!-- Load Geist font from Vercel CDN -->
+  <!-- Load Geist font -->
   <link rel="stylesheet" href="https://geists.vercel.app/font.css" />
 
   <style>
@@ -41,7 +41,6 @@
     h2 {
       text-align: center;
       margin-bottom: 10px;
-      color: #fff;
       font-size: 24px;
       font-weight: 600;
     }
@@ -54,7 +53,8 @@
       line-height: 1.5;
     }
 
-    input {
+    input,
+    textarea {
       width: 100%;
       padding: 12px 10px;
       border-radius: 6px;
@@ -65,8 +65,14 @@
       margin-bottom: 20px;
     }
 
-    input::placeholder {
+    input::placeholder,
+    textarea::placeholder {
       color: #999;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
     }
 
     button {
@@ -86,25 +92,40 @@
       background-color: #0056b3;
       border-color: #0056b3;
     }
+
+    .receipt {
+      background-color: #111;
+      margin-top: 20px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      color: #0f0;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 <body>
 
   <form id="donationForm">
     <h2>Make a Donation</h2>
-   <p class="description">
+    <p class="description">
       Your donation supports our mission to build impactful tools and projects
       that benefit our community. Whether you’re an individual, a small business, 
       or a large organization, your contribution makes a real difference.
     </p>
-    
+
+    <input type="text" id="name" placeholder="Your Name or Organization (optional)" />
     <input type="number" id="price" placeholder="Amount (ZAR)" required />
     <input type="email" id="email" placeholder="Your Email" required />
+    <textarea id="desc" placeholder="Donation Description (optional)"></textarea>
+
     <button type="submit">Donate Now</button>
+
+    <div id="receipt" class="receipt" style="display: none;"></div>
   </form>
 
   <script>
-    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDb2cl7lsypR1ZoqHGD-mKhzN_lnDcyVEQ",
       authDomain: "website-6a5f1.firebaseapp.com",
@@ -121,8 +142,15 @@
     document.getElementById('donationForm').addEventListener('submit', function(e) {
       e.preventDefault();
 
-      const price = document.getElementById('price').value;
-      const email = document.getElementById('email').value;
+      const name = document.getElementById('name').value.trim();
+      const price = document.getElementById('price').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const desc = document.getElementById('desc').value.trim();
+
+      if (!price || !email) {
+        alert("Please enter required fields.");
+        return;
+      }
 
       const handler = PaystackPop.setup({
         key: 'pk_test_f3f2b1747ea86a11b2df8973c8c26085e6926e1d',
@@ -130,17 +158,38 @@
         amount: price * 100,
         currency: "ZAR",
         callback: function(response) {
-          db.ref('donations').push({
+          const ref = response.reference;
+          const donationData = {
+            name: name || "Anonymous",
             amount: price,
             email,
-            paymentRef: response.reference,
+            description: desc || "-",
+            paymentRef: ref,
             donatedAt: new Date().toISOString()
-          }).then(() => {
-            alert('Thank you for your donation!');
-            document.getElementById('donationForm').reset();
-          }).catch(err => {
-            alert('Error saving to database: ' + err);
-          });
+          };
+
+          db.ref('donations').push(donationData)
+            .then(() => {
+              const receipt = `
+🎉 Thank you for your donation!
+
+Donor: ${donationData.name}
+Amount: ZAR ${donationData.amount}
+Email: ${donationData.email}
+Description: ${donationData.description}
+Reference: ${donationData.paymentRef}
+Date: ${new Date().toLocaleString()}
+              `.trim();
+
+              const receiptBox = document.getElementById("receipt");
+              receiptBox.innerText = receipt;
+              receiptBox.style.display = "block";
+
+              document.getElementById('donationForm').reset();
+            })
+            .catch(err => {
+              alert('Error saving donation: ' + err);
+            });
         },
         onClose: function() {
           alert('Donation cancelled.');
