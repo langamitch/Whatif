@@ -3,83 +3,100 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Post an Ad</title>
+  <title>Make a Donation</title>
   <script src="https://js.paystack.co/v1/inline.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
+  <!-- Load Geist font from Vercel CDN -->
+  <link rel="stylesheet" href="https://geists.vercel.app/font.css" />
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       background-color: #000;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding-top: 40px;
-      margin: 0;
+      min-height: 100vh;
+      padding-top: 50px;
     }
 
     form {
-      background-color: #000;
-      padding: 30px;
+      background-color: #0d0d0d;
+      padding: 30px 25px;
       width: 100%;
-      max-width: 480px;
-
+      max-width: 460px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
     }
 
     h2 {
       text-align: center;
-      margin-bottom: 25px;
+      margin-bottom: 10px;
       color: #fff;
+      font-size: 24px;
+      font-weight: 600;
     }
 
-    input,
-    textarea {
-width: 100%;
-  padding: 10px 5px;
-  border-radius: 6px;
-  border: none;
-  color: #fff;
-  background-color: #1e1e1e;
-  font-size: 16px;
-  box-sizing: border-box;
-
+    p.description {
+      text-align: center;
+      font-size: 15px;
+      color: #aaa;
+      margin-bottom: 25px;
+      line-height: 1.5;
     }
 
-    textarea {
-      resize: vertical;
-      min-height: 100px;
+    input {
+      width: 100%;
+      padding: 12px 10px;
+      border-radius: 6px;
+      border: none;
+      color: #fff;
+      background-color: #1e1e1e;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    input::placeholder {
+      color: #999;
     }
 
     button {
-  width: fit-content;
-  padding: 8px 5px;
-  border-radius: 5px;
-  border: 1px solid rgb(255, 255, 255);
-  background-color: transparent;
-  color: rgb(255, 255, 255);
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  margin-top: 10px;
-
+      padding: 10px 18px;
+      border-radius: 6px;
+      border: 1px solid #fff;
+      background-color: transparent;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      display: inline-block;
     }
 
     button:hover {
       background-color: #0056b3;
+      border-color: #0056b3;
     }
   </style>
 </head>
 <body>
 
-  <form id="adForm">
-    <h2>Post Your Ad</h2>
-    <input type="text" id="title" placeholder="Ad Title" required />
-    <textarea id="description" placeholder="Ad Description" required></textarea>
-    <input type="number" id="price" placeholder="Price (ZAR)" required />
+  <form id="donationForm">
+    <h2>Make a Donation</h2>
+    <p class="description">Your support helps us grow and build better tools for the community.</p>
+    
+    <input type="number" id="price" placeholder="Amount (ZAR)" required />
     <input type="email" id="email" placeholder="Your Email" required />
-    <button type="submit">Post Ad & Pay</button>
+    <button type="submit">Donate Now</button>
   </form>
 
   <script>
@@ -94,41 +111,35 @@ width: 100%;
       appId: "YOUR_APP_ID"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Handle form submission
-    document.getElementById('adForm').addEventListener('submit', function(e) {
+    document.getElementById('donationForm').addEventListener('submit', function(e) {
       e.preventDefault();
 
-      const title = document.getElementById('title').value;
-      const description = document.getElementById('description').value;
       const price = document.getElementById('price').value;
       const email = document.getElementById('email').value;
 
       const handler = PaystackPop.setup({
         key: 'pk_test_f3f2b1747ea86a11b2df8973c8c26085e6926e1d',
         email: email,
-        amount: price * 100, // Convert to kobo
+        amount: price * 100,
         currency: "ZAR",
         callback: function(response) {
-          db.ref('ads').push({
-            title,
-            description,
-            price,
+          db.ref('donations').push({
+            amount: price,
             email,
             paymentRef: response.reference,
-            postedAt: new Date().toISOString()
+            donatedAt: new Date().toISOString()
           }).then(() => {
-            alert('Ad Posted Successfully!');
-            document.getElementById('adForm').reset();
+            alert('Thank you for your donation!');
+            document.getElementById('donationForm').reset();
           }).catch(err => {
             alert('Error saving to database: ' + err);
           });
         },
         onClose: function() {
-          alert('Transaction cancelled.');
+          alert('Donation cancelled.');
         }
       });
 
