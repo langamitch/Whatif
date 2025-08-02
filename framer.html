@@ -1,26 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
- <link rel="stylesheet" href="index.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Post an Ad</title>
   <script src="https://js.paystack.co/v1/inline.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    body {
+      background-color: #f1f5f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 40px;
+      margin: 0;
+    }
+
+    form {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 18px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: #007bff;
+      color: #fff;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
-  <h2>Post Your Ad</h2>
+
   <form id="adForm">
-   <div class="form-control">
-                      
-    <input type="text" id="title" placeholder="Ad Title" required></div>
-    <textarea id="description" placeholder="Ad Description" required></textarea><br><br>
-    <input type="number" id="price" placeholder="Price (ZAR)" required><br><br>
-    <input type="email" id="email" placeholder="Your Email" required><br><br>
+    <h2>Post Your Ad</h2>
+    <input type="text" id="title" placeholder="Ad Title" required />
+    <textarea id="description" placeholder="Ad Description" required></textarea>
+    <input type="number" id="price" placeholder="Price (ZAR)" required />
+    <input type="email" id="email" placeholder="Your Email" required />
     <button type="submit">Post Ad & Pay</button>
   </form>
 
   <script>
-    // 🔐 Your Firebase config
+    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDb2cl7lsypR1ZoqHGD-mKhzN_lnDcyVEQ",
       authDomain: "website-6a5f1.firebaseapp.com",
@@ -31,9 +96,11 @@
       appId: "YOUR_APP_ID"
     };
 
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // Handle form submission
     document.getElementById('adForm').addEventListener('submit', function(e) {
       e.preventDefault();
 
@@ -45,11 +112,10 @@
       const handler = PaystackPop.setup({
         key: 'pk_test_f3f2b1747ea86a11b2df8973c8c26085e6926e1d',
         email: email,
-        amount: price * 100, // in kobo
+        amount: price * 100, // Convert to kobo
         currency: "ZAR",
         callback: function(response) {
-          const ref = db.ref('ads').push();
-          ref.set({
+          db.ref('ads').push({
             title,
             description,
             price,
@@ -59,7 +125,7 @@
           }).then(() => {
             alert('Ad Posted Successfully!');
             document.getElementById('adForm').reset();
-          }).catch((err) => {
+          }).catch(err => {
             alert('Error saving to database: ' + err);
           });
         },
@@ -71,5 +137,6 @@
       handler.openIframe();
     });
   </script>
+
 </body>
 </html>
