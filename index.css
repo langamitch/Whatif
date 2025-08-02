@@ -855,7 +855,7 @@ option {
 
     .sidebar ul {
       position:absolute;
-      bottom:0;
+      bottom:20px;
       left:20px;
       list-style: none;
       padding: 0;
