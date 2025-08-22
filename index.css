@@ -292,6 +292,7 @@ nav p {
   left: 0;
   width: 100%;
   z-index: 9999;
+  y-overflow: auto;
   height: 100%;
 
   background-color: rgba(0, 0, 0, 0.079);
@@ -301,7 +302,7 @@ nav p {
 
 .overlay-content {
   position: absolute;
-
+y-overflow: auto;
   left: 50%;
   width: 100%;
   transform: translate(-50%, 0);
