@@ -574,20 +574,19 @@ option {
   color: #777777;
 }
 
-
 .button-group {
   display: flex;
-  align-items: center;
+  align-items: center; /* vertically center all buttons */
+  justify-content: center; /* horizontally center the group */
+  gap: 1rem; /* space between buttons */
   height: 60px;
-  justify-content: center;
-  gap: 1rem;
 }
 
 .button {
   display: inline-flex;
-  align-items: center;
-
-  padding: 8px 5px;
+  align-items: center; /* vertically center content */
+  justify-content: center; /* center text or icons */
+  padding: 8px 12px; /* consistent padding for text and icons */
   border-radius: 5px;
   border: 1px solid rgb(255, 255, 255);
   background-color: transparent;
@@ -595,21 +594,40 @@ option {
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
-  margin-top: 10px;
+  margin: 0; /* remove margin-top to fix alignment */
+  text-decoration: none; /* for anchor buttons */
 }
+
+.button .icon {
+  margin-left: 5px; /* spacing if button has text and icon */
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.button.icon-only {
+  padding: 8px;
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+  border-radius: 50%; /* make icon buttons circular */
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .button {
-    justify-content: center;
     font-size: 14px;
-    padding: 0.6rem 1.2rem;
+    padding: 0.6rem 1rem;
   }
 }
 
 @media (max-width: 480px) {
   .button {
     font-size: 13px;
-    padding: 0.8rem 1rem;
+    padding: 0.5rem 0.8rem;
   }
+}
+@media (max-width: 480px) {
+  
   .popup {
     padding: 200px 20px;
   }
