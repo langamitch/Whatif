@@ -292,7 +292,7 @@ nav p {
   left: 0;
   width: 100%;
   z-index: 9999;
-  y-overflow: auto;
+  overflow-y: auto;
   height: 100%;
 
   background-color: rgba(0, 0, 0, 0.079);
@@ -302,7 +302,7 @@ nav p {
 
 .overlay-content {
   position: absolute;
-y-overflow: auto;
+overflow-y: auto;
   left: 50%;
   width: 100%;
   transform: translate(-50%, 0);
@@ -480,7 +480,7 @@ option {
 }
 .submit-btn {
   width: fit-content;
-  padding: 15px;
+  padding: 10px 15px;
   border-radius: 45px;
   border: 1px solid rgb(255, 255, 255);
   background-color: white;
@@ -597,6 +597,7 @@ option {
   cursor: pointer;
   margin-top: 10px;
 }
+
 @media (max-width: 768px) {
   .button {
     justify-content: center;
@@ -604,10 +605,9 @@ option {
     padding: 0.6rem 1.1rem;
   }
   .post-container {
-    display: grid;
+
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    padding: 20px;
+
   }
 }
 
