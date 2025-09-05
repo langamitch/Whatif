@@ -136,7 +136,8 @@ function listenForPosts() {
       postContainer.innerHTML = ""; // Clear again to be safe
 
       if (snapshot.empty) {
-        postContainer.innerHTML = "<p>No posts to display.</p>";
+        postContainer.innerHTML = "<p>No posts to display right now.</p><p>This might be due to a weak or lost network connection, please check your network connectivity and reload page</p>"
+        ;
         return;
       }
 
