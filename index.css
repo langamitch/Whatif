@@ -1,4 +1,4 @@
-body {
+ body {
   font-family: "Inter", sans-serif;
   margin: 0;
   padding: 0;
@@ -507,14 +507,14 @@ option {
 }
 
 .post-container {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 15px;
   padding: 20px;
 }
 
 .post-card {
-  width: 350px;
+ 
 
   overflow: hidden;
 }
@@ -601,6 +601,12 @@ option {
     font-size: 14px;
     padding: 0.6rem 1.2rem;
   }
+  .post-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 20px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -620,6 +626,12 @@ option {
  
   padding:10px;
   
+}
+.post-container {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 15px;
+  padding: 20px;
 }
 }
 
