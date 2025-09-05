@@ -576,10 +576,11 @@ option {
 
 
 .button-group {
-    display: flex; /* or grid */
-    justify-content: center; /* Aligns buttons horizontally */
-    align-items: center; /* Aligns buttons vertically */
-    gap: 10px; /* Adjust spacing between buttons */
+  display: flex;
+  align-items: center;
+  height: 60px;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .button {
