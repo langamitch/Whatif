@@ -1,351 +1,127 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Dual-Device Notes</title>
-    <style>
-        /* --- Basic Styling --- */
-        :root {
-            --primary-color: #007bff;
-            --primary-hover: #0056b3;
-            --danger-color: #d9534f;
-            --light-gray: #f0f2f5;
-            --border-color: #ccc;
-            --background-color: #fff;
-            --text-color: #333;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--light-gray);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: var(--text-color);
-        }
-        .container {
-            background: var(--background-color);
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 90%;
-            max-width: 700px;
-            text-align: center;
-        }
-        .hidden {
-            display: none !important;
-        }
-        h2, h3 {
-            margin-top: 0;
-        }
-        textarea, #viewer-content {
-            width: 100%;
-            height: 400px;
-            box-sizing: border-box;
-            font-size: 1rem;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            resize: vertical;
-        }
-        #viewer-content {
-            background: #fafafa;
-            overflow-y: auto;
-            white-space: pre-wrap; /* Respects newlines */
-            text-align: left;
-        }
-        button {
-            padding: 10px 15px;
-            border: none;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
-            font-size: 1rem;
-            transition: background-color 0.2s;
-        }
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-        .role-prompt button {
-            width: 120px;
-            height: 120px;
-            font-size: 1.2rem;
-            margin: 10px;
-        }
-        #auth-screen input {
-            display: block;
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin: 0 auto 10px auto;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-        }
-        #logout-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background-color: var(--danger-color);
-        }
-        #status-bar {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-            font-size: 0.9rem;
-            color: #555;
-            line-height: 1.4;
-        }
-    </style>
-</head>
-<body>
 
-    <div class="container">
-        <div id="auth-screen">
-            <h2>Dual-Device Notes Login</h2>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Password">
-            <button id="login-btn">Login</button>
-            <button id="signup-btn">Sign Up</button>
-        </div>
-
-        <div id="app-screen" class="hidden">
-            <button id="logout-btn">Logout</button>
-            <h2>Live Note</h2>
-            
-            <div id="role-prompt" class="hidden">
-                <h3>Another Device is Active!</h3>
-                <p>Choose a role for this device.</p>
-                <button id="typer-btn">Typer ✍️</button>
-                <button id="viewer-btn">Viewer 👁️</button>
-            </div>
-
-            <div id="typer-mode" class="hidden">
-                <h3>Typer Mode</h3>
-                <textarea id="note-editor" placeholder="Start typing... changes are saved and synced in real-time."></textarea>
-            </div>
-
-            <div id="viewer-mode" class="hidden">
-                <h3>Viewer Mode (Read-only)</h3>
-                <div id="viewer-content">Waiting for content...</div>
-            </div>
-             
-             <div id="status-bar">Connecting...</div>
-        </div>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    
-    <script>
-        // =================================================================
-        // 🔥 PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE
-        // =================================================================
-        const firebaseConfig = {
-          apiKey: "YOUR_API_KEY",
-          authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-          projectId: "YOUR_PROJECT_ID",
-          storageBucket: "YOUR_PROJECT_ID.appspot.com",
-          messagingSenderId: "YOUR_SENDER_ID",
-          appId: "YOUR_APP_ID"
-        };
-
-        // =================================================================
-        // 🚀 APP INITIALIZATION
-        // =================================================================
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // --- Global State & Refs ---
-        let currentUser = null;
-        let activeDevicesListener = null;
-        let noteListener = null;
-        const deviceId = `device_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        const NOTE_ID = "shared_note"; // Using one shared note for this example
-
-        // --- UI Elements ---
-        const authScreen = document.getElementById('auth-screen');
-        const appScreen = document.getElementById('app-screen');
-        const rolePrompt = document.getElementById('role-prompt');
-        const typerMode = document.getElementById('typer-mode');
-        const viewerMode = document.getElementById('viewer-mode');
-        const noteEditor = document.getElementById('note-editor');
-        const viewerContent = document.getElementById('viewer-content');
-        const statusBar = document.getElementById('status-bar');
-
-        // =================================================================
-        // 👤 AUTHENTICATION LOGIC
-        // =================================================================
-        document.getElementById('login-btn').addEventListener('click', () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            auth.signInWithEmailAndPassword(email, password).catch(error => alert(error.message));
-        });
-
-        document.getElementById('signup-btn').addEventListener('click', () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            auth.createUserWithEmailAndPassword(email, password).catch(error => alert(error.message));
-        });
-
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            auth.signOut();
-        });
-
-        // The main observer for auth state
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                // User is signed in
-                currentUser = user;
-                authScreen.classList.add('hidden');
-                appScreen.classList.remove('hidden');
-                await registerDevice();
-                listenForDeviceChanges();
-                listenForNoteChanges();
-            } else {
-                // User is signed out
-                await cleanup();
-                currentUser = null;
-                authScreen.classList.remove('hidden');
-                appScreen.classList.add('hidden');
-            }
-        });
-
-        // =================================================================
-        // 💻 DEVICE & SESSION MANAGEMENT
-        // =================================================================
-        async function registerDevice() {
-            if (!currentUser) return;
-            const deviceRef = db.collection('users').doc(currentUser.uid).collection('activeDevices').doc(deviceId);
-            try {
-                await deviceRef.set({
-                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
-                    role: 'pending' // Role is 'pending' until assigned
-                });
-            } catch (error) {
-                console.error("Error registering device:", error);
-            }
-        }
-
-        function listenForDeviceChanges() {
-            if (activeDevicesListener) activeDevicesListener(); // Unsubscribe from previous listener
-            
-            const devicesRef = db.collection('users').doc(currentUser.uid).collection('activeDevices');
-            activeDevicesListener = devicesRef.onSnapshot(snapshot => {
-                const devices = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                const typer = devices.find(d => d.role === 'typer');
-                const thisDevice = devices.find(d => d.id === deviceId);
-
-                updateStatusBar(devices, typer);
-
-                if (devices.length > 1 && !typer) {
-                    showUI('prompt'); // Multiple devices, no typer yet -> show prompt
-                } else if (typer && thisDevice?.id === typer.id) {
-                    showUI('typer'); // This device is the typer
-                } else if (typer && thisDevice?.id !== typer.id) {
-                    showUI('viewer'); // Another device is the typer
-                } else if (devices.length === 1 && thisDevice) {
-                    setRole('typer'); // Only one device, becomes typer automatically
-                }
-            }, error => {
-                console.error("Error listening to device changes:", error);
-            });
-        }
-
-        async function setRole(role) {
-            if (!currentUser) return;
-            const deviceRef = db.collection('users').doc(currentUser.uid).collection('activeDevices').doc(deviceId);
-            await deviceRef.update({ role: role });
-        }
-
-        document.getElementById('typer-btn').addEventListener('click', () => setRole('typer'));
-        document.getElementById('viewer-btn').addEventListener('click', () => setRole('viewer'));
-
-        function showUI(mode) {
-            rolePrompt.classList.add('hidden');
-            typerMode.classList.add('hidden');
-            viewerMode.classList.add('hidden');
-
-            if (mode === 'prompt') rolePrompt.classList.remove('hidden');
-            else if (mode === 'typer') typerMode.classList.remove('hidden');
-            else if (mode === 'viewer') viewerMode.classList.remove('hidden');
-        }
-
-        function updateStatusBar(devices, typer) {
-            let statusText = `<b>Your Device ID:</b> ${deviceId.substring(7, 13)}<br>`;
-            statusText += `<b>Connected Devices:</b> ${devices.length} | `;
-            if (typer) {
-                const role = typer.id === deviceId ? 'You are the <b>Typer</b>' : 'You are a <b>Viewer</b>';
-                statusText += role;
-            } else {
-                statusText += 'Waiting for a typer to be selected...';
-            }
-            statusBar.innerHTML = statusText;
-        }
-
-        // =================================================================
-        // 📝 NOTE SYNCING & CLEANUP
-        // =================================================================
-        let saveTimeout;
-
-        // Typer: Save to Firestore after user stops typing for 1 second
-        noteEditor.addEventListener('input', (e) => {
-            clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => {
-                if (!currentUser) return;
-                const noteRef = db.collection('users').doc(currentUser.uid).collection('notes').doc(NOTE_ID);
-                noteRef.set({
-                    content: e.target.value,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true }); // Use merge to avoid overwriting other fields
-            }, 1000); 
-        });
-
-        // Viewer/Typer: Listen for note changes from Firestore
-        function listenForNoteChanges() {
-            if (noteListener) noteListener(); // Unsubscribe
-            
-            const noteRef = db.collection('users').doc(currentUser.uid).collection('notes').doc(NOTE_ID);
-            noteListener = noteRef.onSnapshot(doc => {
-                const content = doc.exists ? doc.data().content : "";
-                // Update both views to keep them in sync regardless of role
-                if (noteEditor.value !== content) {
-                    noteEditor.value = content;
-                }
-                viewerContent.textContent = content;
-            }, error => {
-                console.error("Error listening to note changes:", error);
-                viewerContent.textContent = "Error loading note.";
-            });
-        }
-
-        // Cleanup on logout or window close
-        async function cleanup() {
-            // Unsubscribe from listeners
-            if (activeDevicesListener) activeDevicesListener();
-            if (noteListener) noteListener();
-            activeDevicesListener = null;
-            noteListener = null;
-
-            // Remove device from Firestore
-            if (currentUser) {
-                const deviceRef = db.collection('users').doc(currentUser.uid).collection('activeDevices').doc(deviceId);
-                await deviceRef.delete().catch(err => console.error("Cleanup error:", err));
-            }
-        }
-
-        window.addEventListener('beforeunload', (event) => {
-            if (auth.currentUser) {
-                // Firestore offline persistence will handle this request even if the tab closes immediately.
-                cleanup();
-            }
-        });
-
-    </script>
-</body>
-</html>
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  footer {
+    background-color: white;
+    padding: 40px;
+    width: 90%;
+    max-width: 1000px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+  }
+  
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .main-contact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 20px;
+  }
+  
+  .email, .phone {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+  }
+  
+  .details {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding-top: 20px;
+  }
+  
+  .address, .office-hours p {
+    margin: 0;
+    color: #666;
+    line-height: 1.4;
+  }
+  
+  .links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .say-hello {
+    margin: 0;
+    color: #666;
+  }
+  
+  .say-hello a {
+    color: #333;
+    text-decoration: underline;
+  }
+  
+  .social-icons {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .social-icons a {
+    color: #666;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+  }
+  
+  .social-icons a:hover {
+    color: #000;
+  }
+  
+  .social-icons svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .privacy-policy {
+    color: #666;
+    text-decoration: none;
+  }
+  
+  .legal-info {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+  
+  .legal-info p {
+    margin: 0;
+    color: #999;
+    font-size: 0.8em;
+  }
+  
+  @media (max-width: 768px) {
+    .main-contact {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .details {
+      flex-direction: column;
+      gap: 20px;
+    }
+    .links {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  }
+  

@@ -576,3 +576,37 @@ if (loadingOverlay) {
 if (loadingOverlay) {
   loadingOverlay.style.display = "none"; // Hide overlay
 }
+
+
+
+// Get elements
+const privacyLink = document.getElementById("privacy-link");
+const termsLink = document.getElementById("terms-link");
+const privacyModal = document.getElementById("privacy-modal");
+const termsModal = document.getElementById("terms-modal");
+const closeButtons = document.querySelectorAll(".close");
+
+// Open Privacy Policy modal
+privacyLink.addEventListener("click", function(e) {
+  e.preventDefault();
+  privacyModal.style.display = "block";
+});
+
+// Open Terms modal
+termsLink.addEventListener("click", function(e) {
+  e.preventDefault();
+  termsModal.style.display = "block";
+});
+
+// Close modals
+closeButtons.forEach(btn => {
+  btn.addEventListener("click", function() {
+    this.closest(".modal").style.display = "none";
+  });
+});
+
+// Close when clicking outside modal
+window.addEventListener("click", function(e) {
+  if (e.target === privacyModal) privacyModal.style.display = "none";
+  if (e.target === termsModal) termsModal.style.display = "none";
+});
