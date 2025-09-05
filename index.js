@@ -135,37 +135,11 @@ function listenForPosts() {
       }
       postContainer.innerHTML = ""; // Clear again to be safe
 
-.no-posts {
-  text-align: center;
-  padding: 40px 20px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-  color: #374151;
-  font-family: Arial, sans-serif;
-  max-width: 500px;
-  margin: 40px auto;
-}
-
-.no-posts .icon {
-  font-size: 40px;
-  margin-bottom: 15px;
-}
-
-.no-posts .title {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #111827;
-}
-
-.no-posts .subtitle {
-  font-size: 14px;
-  color: #6b7280;
-  line-height: 1.6;
-}
-
+      if (snapshot.empty) {
+        postContainer.innerHTML = "<p>No posts to display right now.</p><p>This might be due to a weak or lost network connection, please check your network connectivity and reload page</p>"
+        ;
+        return;
+      }
 
       // 🔁 Convert snapshot to array and shuffle
       const docsArray = snapshot.docs.map((doc) => ({
