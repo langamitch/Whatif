@@ -607,7 +607,7 @@ option {
 
 @media (max-width: 480px) {
   .button {
-    font-size: 16px;
+    font-size: 13px;
     padding: 0.8rem 1rem;
   }
   .popup {
