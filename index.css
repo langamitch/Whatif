@@ -574,12 +574,12 @@ option {
   color: #777777;
 }
 
+
 .button-group {
-  display: flex;
-  align-items: center;
-  height: 60px;
-  justify-content: center;
-  gap: 1rem;
+    display: flex; /* or grid */
+    justify-content: center; /* Aligns buttons horizontally */
+    align-items: center; /* Aligns buttons vertically */
+    gap: 10px; /* Adjust spacing between buttons */
 }
 
 .button {
