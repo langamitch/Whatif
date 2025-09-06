@@ -1123,9 +1123,10 @@ footer {
 }
 
 .footer-legal a {
-  color: white;
+  color: #666;
   font-size: 14px;
   text-decoration: none;
+  gap: 40px;
 }
 
 /* Mobile Responsive */
