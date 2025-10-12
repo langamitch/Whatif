@@ -6,70 +6,49 @@ export default async function handler(req, res) {
 
   try {
     const { text } = req.body;
-
     if (!text || text.trim().length === 0) {
       return res.status(400).json({ safe: false, reason: "Empty text" });
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
+    const HF_API_TOKEN = process.env.HF_API_KEY; // your Hugging Face token
 
-    if (!apiKey) {
-      console.error("OPENAI_API_KEY not set");
-      return res.status(500).json({
-        safe: false,
-        reason: "Server configuration error: API key not set",
-      });
+    if (!HF_API_TOKEN) {
+      return res.status(500).json({ safe: false, reason: "HF API key not set" });
     }
 
-    // Call OpenAI Moderation API
-    const response = await fetch("https://api.openai.com/v1/moderations", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "omni-moderation-latest",
-        input: text,
-      }),
-    });
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/unitary/toxic-bert",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${HF_API_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ inputs: text }),
+      }
+    );
 
     if (!response.ok) {
-      console.error("OpenAI Moderation API error:", response.status, await response.text());
-      return res.status(500).json({
-        safe: false,
-        reason: "Moderation API error",
-      });
+      console.error("HF API error:", response.status);
+      return res.status(500).json({ safe: true, reason: "Moderation API unavailable" });
     }
 
-    // Parse JSON safely
-    let data;
-    try {
-      data = await response.json();
-    } catch (parseErr) {
-      console.error("Failed to parse moderation API response:", parseErr);
-      return res.status(500).json({
-        safe: false,
-        reason: "Invalid response from moderation API",
-      });
-    }
+    const result = await response.json();
+    // result is usually an array of objects like [{label: "toxic", score: 0.02}, ...]
+    const toxicLabels = ["toxic", "threat", "insult", "identity_hate", "obscene"];
+    const flagged = result.some(item => toxicLabels.includes(item.label) && item.score > 0.6);
 
-    const result = data.results?.[0];
-
-    if (result?.flagged) {
+    if (flagged) {
       return res.status(200).json({
         safe: false,
-        categories: result.categories || {},
         reason: "Inappropriate content detected",
+        categories: result.filter(item => toxicLabels.includes(item.label)),
       });
     }
 
     return res.status(200).json({ safe: true });
   } catch (err) {
-    console.error("Moderation endpoint unexpected error:", err);
-    return res.status(500).json({
-      safe: false,
-      reason: "Moderation service failed",
-    });
+    console.error("Moderation endpoint error:", err);
+    return res.status(500).json({ safe: true, reason: "Moderation service failed" });
   }
 }
