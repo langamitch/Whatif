@@ -421,6 +421,8 @@ suggestionForm?.addEventListener("submit", async (e) => {
     }
 
     // --- AI Moderation Check ---
+    submitBtn.textContent = "Checking content...";
+    
     let moderationData;
     try {
       const moderationResponse = await fetch("/api/moderate", {
@@ -428,7 +430,14 @@ suggestionForm?.addEventListener("submit", async (e) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: `${name} ${suggestion}` }),
       });
+
+      if (!moderationResponse.ok) {
+        throw new Error(`Moderation API returned ${moderationResponse.status}`);
+      }
+
       moderationData = await moderationResponse.json();
+      console.log("Moderation result:", moderationData);
+
     } catch (err) {
       console.error("Error contacting moderation endpoint:", err);
       alert("Could not verify content safety. Please try again later.");
@@ -437,15 +446,19 @@ suggestionForm?.addEventListener("submit", async (e) => {
 
     // Block if flagged
     if (!moderationData.safe) {
-      alert(
-        "⚠️ Submission blocked: " +
-          (moderationData.reason || "Inappropriate content detected")
-      );
+      const reason = moderationData.reason || "Inappropriate content detected";
+      const details = moderationData.categories 
+        ? `\n\nDetected: ${moderationData.categories.map(c => c.label).join(", ")}`
+        : "";
+      
+      alert(`⚠️ Submission blocked: ${reason}${details}`);
       console.warn("Moderation categories flagged:", moderationData.categories);
       return;
     }
 
     // --- Submit to Firestore ---
+    submitBtn.textContent = "Saving...";
+    
     await addDoc(postsRef, {
       name,
       suggestion,
@@ -453,23 +466,30 @@ suggestionForm?.addEventListener("submit", async (e) => {
       category,
       hashtags,
       timestamp: serverTimestamp(),
+      moderated: true,
+      moderationTimestamp: new Date().toISOString(),
     });
 
     // Reset form and close overlay
     suggestionForm.reset();
-    updateWordCount?.();
-    if (formOverlay) formOverlay.style.display = "none";
+    if (typeof updateWordCount === 'function') {
+      updateWordCount();
+    }
+    if (formOverlay) {
+      formOverlay.style.display = "none";
+    }
 
-    alert("Suggestion submitted successfully!");
+    alert("✅ Suggestion submitted successfully!");
+
   } catch (err) {
     console.error("Submission error:", err);
-    alert("Failed to submit suggestion. Check console for details.");
+    alert("❌ Failed to submit suggestion. Please try again.\n\nError: " + err.message);
   } finally {
+    // Always re-enable button
     submitBtn.disabled = false;
     submitBtn.textContent = originalText;
   }
 });
-
 
 
 
