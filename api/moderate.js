@@ -40,9 +40,9 @@ export default async function handler(req, res) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000); // 30 second timeout
     
-    // Using a more reliable model that doesn't require special permissions
+    // Using DistilBERT for toxic content detection - more reliable
     const response = await fetch(
-      "https://api-inference.huggingface.co/models/facebook/roberta-hate-speech-dynabench-r4-target",
+      "https://api-inference.huggingface.co/models/martin-ha/toxic-comment-model",
       {
         method: "POST",
         headers: {
@@ -93,26 +93,46 @@ export default async function handler(req, res) {
     const result = await response.json();
     console.log("HF Response body:", JSON.stringify(result, null, 2));
 
-    // Handle both nested and flat array responses
-    const predictions = Array.isArray(result[0]) ? result[0] : result;
+    // Handle different response formats
+    let predictions;
+    if (Array.isArray(result)) {
+      predictions = Array.isArray(result[0]) ? result[0] : result;
+    } else if (result.error) {
+      console.error("HF returned error:", result.error);
+      return res.status(200).json({ 
+        safe: true, 
+        reason: "Moderation service error" 
+      });
+    } else {
+      console.error("Unexpected response format:", result);
+      return res.status(200).json({ 
+        safe: true, 
+        reason: "Unexpected moderation response" 
+      });
+    }
 
     console.log("Predictions:", predictions);
 
-    // Define toxic/hate categories - this model uses 'hate' and 'nothate' labels
-    // We flag content if 'hate' has high confidence
-    const hateItem = predictions.find(item => item.label === 'hate');
+    // This model returns 'toxic' and 'non-toxic' labels
+    const toxicItem = predictions.find(item => 
+      item.label && item.label.toLowerCase() === 'toxic'
+    );
     
-    const THRESHOLD = 0.5; // Lower threshold for hate speech
-    const isHateful = hateItem && hateItem.score > THRESHOLD;
+    const THRESHOLD = 0.5; // 50% confidence threshold
+    
+    console.log("Toxic item found:", toxicItem);
+    console.log("Threshold check:", toxicItem ? toxicItem.score > THRESHOLD : false);
+    
+    const isToxic = toxicItem && toxicItem.score > THRESHOLD;
 
-    if (isHateful) {
-      console.warn("Content flagged as hate speech:", hateItem);
+    if (isToxic) {
+      console.warn("Content flagged as toxic:", toxicItem);
       return res.status(200).json({
         safe: false,
         reason: "Inappropriate content detected",
         categories: [{
-          label: 'hate',
-          score: hateItem.score.toFixed(2)
+          label: toxicItem.label,
+          score: toxicItem.score.toFixed(2)
         }],
       });
     }
