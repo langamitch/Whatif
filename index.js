@@ -402,32 +402,50 @@ suggestionForm?.addEventListener("submit", async (e) => {
   submitBtn.textContent = "Submitting...";
 
   try {
-    // Validate basic fields
-    if (!name || !suggestion || !socialLink || !category || !/^https?:\/\//.test(socialLink)) {
-      alert("Please fill in all fields. The URL must start with http:// or https://");
+    // Basic validation
+    if (!name || !suggestion || !socialLink || !category) {
+      alert("Please fill in all fields.");
       return;
     }
 
-    // --- AI Moderation check ---
-    const moderationResponse = await fetch("/api/moderate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: `${name} ${suggestion}` }),
-    });
-
-    if (!moderationResponse.ok) {
-      throw new Error("Moderation API failed");
+    if (!/^https?:\/\//.test(socialLink)) {
+      alert("Social link must start with http:// or https://");
+      return;
     }
 
-    const moderationData = await moderationResponse.json();
+    // Word limit check
+    const words = suggestion.split(/\s+/).filter(Boolean);
+    if (words.length > 200) {
+      alert("Your suggestion exceeds the 200 word limit.");
+      return;
+    }
 
+    // --- AI Moderation Check ---
+    let moderationData;
+    try {
+      const moderationResponse = await fetch("/api/moderate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: `${name} ${suggestion}` }),
+      });
+      moderationData = await moderationResponse.json();
+    } catch (err) {
+      console.error("Error contacting moderation endpoint:", err);
+      alert("Could not verify content safety. Please try again later.");
+      return;
+    }
+
+    // Block if flagged
     if (!moderationData.safe) {
-      alert("⚠️ Submission blocked: " + (moderationData.reason || "Inappropriate content detected"));
+      alert(
+        "⚠️ Submission blocked: " +
+          (moderationData.reason || "Inappropriate content detected")
+      );
       console.warn("Moderation categories flagged:", moderationData.categories);
       return;
     }
 
-    // --- Submit to Firestore if safe ---
+    // --- Submit to Firestore ---
     await addDoc(postsRef, {
       name,
       suggestion,
@@ -437,19 +455,21 @@ suggestionForm?.addEventListener("submit", async (e) => {
       timestamp: serverTimestamp(),
     });
 
+    // Reset form and close overlay
     suggestionForm.reset();
+    updateWordCount?.();
     if (formOverlay) formOverlay.style.display = "none";
 
     alert("Suggestion submitted successfully!");
-  } catch (error) {
-    console.error("Error writing to Firestore or moderation check:", error);
+  } catch (err) {
+    console.error("Submission error:", err);
     alert("Failed to submit suggestion. Check console for details.");
   } finally {
-    // Always re-enable the button and restore text
     submitBtn.disabled = false;
     submitBtn.textContent = originalText;
   }
 });
+
 
 
 
