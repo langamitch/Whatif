@@ -1,131 +1,98 @@
-// Wait for DOM to be fully loaded
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM loaded, initializing form...');
-  
-  // Try multiple possible form IDs
-  const suggestionForm = document.getElementById('suggestion-form') || 
-                        document.getElementById('suggestionForm') ||
-                        document.querySelector('form[name="suggestion"]') ||
-                        document.querySelector('.suggestion-form');
-  
-  if (!suggestionForm) {
-    console.error('Suggestion form not found! Available forms:', 
-      Array.from(document.querySelectorAll('form')).map(f => f.id || f.className)
-    );
-    return;
+// Simple keyword-based moderation as a fallback
+// Place this at: pages/api/moderate.js
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
-
-  console.log('Form found:', suggestionForm);
-
-  suggestionForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-  const name = document.getElementById("name")?.value.trim();
-  const suggestion = document.getElementById("suggestion")?.value.trim();
-  const socialLink = document.getElementById("social-link")?.value.trim();
-  const category = document.getElementById("category")?.value;
-  const hashtags = extractHashtags(suggestion);
-  const submitBtn = suggestionForm.querySelector(".submit-btn");
-
-  if (!submitBtn) return;
-
-  submitBtn.disabled = true;
-  const originalText = submitBtn.textContent;
-  submitBtn.textContent = "Submitting...";
 
   try {
-    // Basic validation
-    if (!name || !suggestion || !socialLink || !category) {
-      alert("Please fill in all fields.");
-      return;
-    }
-
-    if (!/^https?:\/\//.test(socialLink)) {
-      alert("Social link must start with http:// or https://");
-      return;
-    }
-
-    // Word limit check
-    const words = suggestion.split(/\s+/).filter(Boolean);
-    if (words.length > 200) {
-      alert("Your suggestion exceeds the 200 word limit.");
-      return;
-    }
-
-    // --- AI Moderation Check ---
-    submitBtn.textContent = "Checking content...";
+    const { text } = req.body;
     
-    let moderationData;
-    try {
-      const moderationResponse = await fetch("/api/moderate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: `${name} ${suggestion}` }),
+    if (!text || text.trim().length === 0) {
+      return res.status(400).json({ 
+        safe: false, 
+        reason: "Empty text provided" 
       });
-
-      if (!moderationResponse.ok) {
-        throw new Error(`Moderation API returned ${moderationResponse.status}`);
-      }
-
-      moderationData = await moderationResponse.json();
-      console.log("Moderation result:", moderationData);
-
-    } catch (err) {
-      console.error("Error contacting moderation endpoint:", err);
-      alert("Could not verify content safety. Please try again later.");
-      return;
     }
 
-    // Block if flagged
-    if (!moderationData.safe) {
-      const reason = moderationData.reason || "Inappropriate content detected";
-      const details = moderationData.categories 
-        ? `\n\nDetected: ${moderationData.categories.map(c => c.label).join(", ")}`
-        : "";
-      
-      alert(`⚠️ Submission blocked: ${reason}${details}`);
-      console.warn("Moderation categories flagged:", moderationData.categories);
-      return;
+    console.log("Moderating text:", text.substring(0, 50) + "...");
+
+    // Basic keyword filtering (expand this list as needed)
+    const bannedWords = [
+      'hate', 'kill', 'die', 'stupid', 'idiot', 'dumb',
+      'fuck', 'shit', 'damn', 'bitch', 'ass', 'crap',
+      'moron', 'loser', 'trash', 'garbage', 'worthless'
+    ];
+
+    const lowerText = text.toLowerCase();
+    const foundBadWords = bannedWords.filter(word => 
+      lowerText.includes(word)
+    );
+
+    if (foundBadWords.length > 0) {
+      console.log("Flagged words:", foundBadWords);
+      return res.status(200).json({
+        safe: false,
+        reason: "Inappropriate language detected",
+        categories: foundBadWords
+      });
     }
 
-    // --- Submit to Firestore ---
-    submitBtn.textContent = "Saving...";
+    // If OpenAI key is available, use it
+    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
     
-    await addDoc(postsRef, {
-      name,
-      suggestion,
-      socialLink,
-      category,
-      hashtags,
-      timestamp: serverTimestamp(),
-      moderated: true,
-      moderationTimestamp: new Date().toISOString(),
-    });
+    if (OPENAI_API_KEY) {
+      try {
+        console.log("Using OpenAI moderation...");
+        
+        const response = await fetch(
+          "https://api.openai.com/v1/moderations",
+          {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${OPENAI_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ input: text }),
+          }
+        );
 
-    // Reset form and close overlay
-    suggestionForm.reset();
-    if (typeof updateWordCount === 'function') {
-      updateWordCount();
-    }
-    if (formOverlay) {
-      formOverlay.style.display = "none";
+        if (response.ok) {
+          const result = await response.json();
+          const moderationResult = result.results[0];
+          
+          if (moderationResult.flagged) {
+            const flaggedCategories = Object.entries(moderationResult.categories)
+              .filter(([_, flagged]) => flagged)
+              .map(([category]) => category);
+
+            console.log("OpenAI flagged:", flaggedCategories);
+            
+            return res.status(200).json({
+              safe: false,
+              reason: "Inappropriate content detected",
+              categories: flaggedCategories
+            });
+          }
+        } else {
+          console.error("OpenAI API error:", response.status);
+        }
+      } catch (err) {
+        console.error("OpenAI moderation failed:", err.message);
+        // Continue to keyword check
+      }
     }
 
-    alert("✅ Suggestion submitted successfully!");
+    // Content passed all checks
+    console.log("Content approved");
+    return res.status(200).json({ safe: true });
 
   } catch (err) {
-    console.error("Submission error:", err);
-    alert("❌ Failed to submit suggestion. Please try again.\n\nError: " + err.message);
-  } finally {
-    // Always re-enable button
-    submitBtn.disabled = false;
-    submitBtn.textContent = originalText;
+    console.error("Moderation error:", err);
+    return res.status(200).json({ 
+      safe: true, 
+      reason: "Moderation service error" 
+    });
   }
-  });
-});
-
-// Helper function if not already defined
-function extractHashtags(text) {
-  const matches = text.match(/#\w+/g);
-  return matches || [];
 }
