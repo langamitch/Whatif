@@ -54,20 +54,7 @@ body {
   display: none;
 }
 
-.avatars {
-  display: flex;
-  justify-content: center;
-  gap: -10px;
-  margin-bottom: 10px;
-}
 
-.avatars img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid #111;
-  margin-left: -10px;
-}
 
 .main-text {
   font-size: 16px;

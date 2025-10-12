@@ -1,4 +1,3 @@
-// /api/moderate.js
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -10,7 +9,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ safe: false, reason: "Empty text" });
     }
 
-    const HF_API_TOKEN = process.env.HF_API_KEY; // your Hugging Face token
+    // <-- Use OPENAI_API_KEY for Hugging Face
+    const HF_API_TOKEN = process.env.OPENAI_API_KEY;
 
     if (!HF_API_TOKEN) {
       return res.status(500).json({ safe: false, reason: "HF API key not set" });
@@ -34,9 +34,11 @@ export default async function handler(req, res) {
     }
 
     const result = await response.json();
-    // result is usually an array of objects like [{label: "toxic", score: 0.02}, ...]
+
     const toxicLabels = ["toxic", "threat", "insult", "identity_hate", "obscene"];
-    const flagged = result.some(item => toxicLabels.includes(item.label) && item.score > 0.6);
+    const flagged = result.some(
+      item => toxicLabels.includes(item.label) && item.score > 0.6
+    );
 
     if (flagged) {
       return res.status(200).json({
