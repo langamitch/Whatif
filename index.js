@@ -1,5 +1,6 @@
 // Import Firebase (v9+ modular syntax for Firestore)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
   getFirestore,
   collection,
@@ -384,7 +385,6 @@ try {
   );
 }
 
-// --- Event Listeners ---
 suggestionForm?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -395,67 +395,62 @@ suggestionForm?.addEventListener("submit", async (e) => {
   const hashtags = extractHashtags(suggestion);
   const submitBtn = suggestionForm.querySelector(".submit-btn");
 
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = "Submitting...";
+  if (!submitBtn) return;
 
-    try {
-      // Validate basic fields first
-      if (
-        !name ||
-        !suggestion ||
-        !socialLink ||
-        !category ||
-        !/^https?:\/\//.test(socialLink)
-      ) {
-        alert(
-          "Please fill in all fields. The URL must start with http:// or https://"
-        );
-        return;
-      }
+  submitBtn.disabled = true;
+  const originalText = submitBtn.textContent;
+  submitBtn.textContent = "Submitting...";
 
-      // --- AI Moderation check ---
-      const moderationResponse = await fetch("/api/moderate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: `${name} ${suggestion}` }),
-      });
-
-      const moderationData = await moderationResponse.json();
-
-      if (!moderationData.safe) {
-        alert(
-          "⚠️ Submission blocked: " +
-            (moderationData.reason || "Inappropriate content detected")
-        );
-        console.warn("Moderation categories flagged:", moderationData.categories);
-        return;
-      }
-
-      // --- Submit to Firestore if safe ---
-      await addDoc(postsRef, {
-        name: name,
-        suggestion: suggestion,
-        socialLink: socialLink,
-        category: category,
-        hashtags: hashtags,
-        timestamp: serverTimestamp(),
-      });
-
-      suggestionForm.reset();
-      if (formOverlay) formOverlay.style.display = "none";
-
-      alert("Suggestion submitted successfully!");
-    } catch (error) {
-      console.error("Error writing to Firestore or moderation check:", error);
-      alert("Failed to submit suggestion. Check console for details.");
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = originalText;
+  try {
+    // Validate basic fields
+    if (!name || !suggestion || !socialLink || !category || !/^https?:\/\//.test(socialLink)) {
+      alert("Please fill in all fields. The URL must start with http:// or https://");
+      return;
     }
+
+    // --- AI Moderation check ---
+    const moderationResponse = await fetch("/api/moderate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: `${name} ${suggestion}` }),
+    });
+
+    if (!moderationResponse.ok) {
+      throw new Error("Moderation API failed");
+    }
+
+    const moderationData = await moderationResponse.json();
+
+    if (!moderationData.safe) {
+      alert("⚠️ Submission blocked: " + (moderationData.reason || "Inappropriate content detected"));
+      console.warn("Moderation categories flagged:", moderationData.categories);
+      return;
+    }
+
+    // --- Submit to Firestore if safe ---
+    await addDoc(postsRef, {
+      name,
+      suggestion,
+      socialLink,
+      category,
+      hashtags,
+      timestamp: serverTimestamp(),
+    });
+
+    suggestionForm.reset();
+    if (formOverlay) formOverlay.style.display = "none";
+
+    alert("Suggestion submitted successfully!");
+  } catch (error) {
+    console.error("Error writing to Firestore or moderation check:", error);
+    alert("Failed to submit suggestion. Check console for details.");
+  } finally {
+    // Always re-enable the button and restore text
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
   }
 });
+
 
 
 // Add word count limit for suggestion textarea
