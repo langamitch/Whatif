@@ -5,6 +5,7 @@
   background-color: #000;
   color: #fff;
   font-weight: 500;
+  letter-spacing: -0.9px;
 }
 
 html,
@@ -560,7 +561,7 @@ option {
 .headline {
   font-size: 32px;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -1px;
   line-height: 1.2em;
   margin-bottom: 1rem;
   color: #ffffff;
@@ -569,7 +570,7 @@ option {
 .subheadline {
   font-size: 32px;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -1px;
   line-height: 1.2em;
   color: #777777;
 }
@@ -1040,7 +1041,7 @@ footer {
   font-size: 32px;
   font-weight: 300;
   margin-bottom: 40px;
-  letter-spacing: -0.5px;
+  letter-spacing: -1px;
   color: #ffffff;
 }
 
@@ -1049,7 +1050,7 @@ footer {
   text-decoration: none;
   font-size: 20px;
   font-weight: 300;
-  letter-spacing: -0.3px;
+  letter-spacing: -1px;
   transition: color 0.3s ease;
 }
 
