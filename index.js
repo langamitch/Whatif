@@ -401,33 +401,54 @@ suggestionForm?.addEventListener("submit", async (e) => {
     submitBtn.textContent = "Submitting...";
 
     try {
+      // Validate basic fields first
       if (
-        name &&
-        suggestion &&
-        socialLink &&
-        category &&
-        /^https?:\/\//.test(socialLink)
+        !name ||
+        !suggestion ||
+        !socialLink ||
+        !category ||
+        !/^https?:\/\//.test(socialLink)
       ) {
-        await addDoc(postsRef, {
-          name: name,
-          suggestion: suggestion,
-          socialLink: socialLink,
-          category: category,
-          hashtags: hashtags,
-          timestamp: serverTimestamp(),
-        });
-
-        suggestionForm.reset();
-        if (formOverlay) formOverlay.style.display = "none";
-
-        alert("Suggestion submitted successfully!");
-      } else {
         alert(
           "Please fill in all fields. The URL must start with http:// or https://"
         );
+        return;
       }
+
+      // --- AI Moderation check ---
+      const moderationResponse = await fetch("/api/moderate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: `${name} ${suggestion}` }),
+      });
+
+      const moderationData = await moderationResponse.json();
+
+      if (!moderationData.safe) {
+        alert(
+          "⚠️ Submission blocked: " +
+            (moderationData.reason || "Inappropriate content detected")
+        );
+        console.warn("Moderation categories flagged:", moderationData.categories);
+        return;
+      }
+
+      // --- Submit to Firestore if safe ---
+      await addDoc(postsRef, {
+        name: name,
+        suggestion: suggestion,
+        socialLink: socialLink,
+        category: category,
+        hashtags: hashtags,
+        timestamp: serverTimestamp(),
+      });
+
+      suggestionForm.reset();
+      if (formOverlay) formOverlay.style.display = "none";
+
+      alert("Suggestion submitted successfully!");
     } catch (error) {
-      console.error("Error writing to Firestore:", error);
+      console.error("Error writing to Firestore or moderation check:", error);
       alert("Failed to submit suggestion. Check console for details.");
     } finally {
       submitBtn.disabled = false;
@@ -435,6 +456,7 @@ suggestionForm?.addEventListener("submit", async (e) => {
     }
   }
 });
+
 
 // Add word count limit for suggestion textarea
 const suggestionTextarea = document.getElementById("suggestion");
