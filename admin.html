@@ -4,16 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <style>* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+:root {
+  --base-100: #fff;
+  --base-200: #999;
+  --base-300: #343434;
+  --base-400: #212121;
+  --base-500: #000;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: 'Inter', sans-serif;
   background: #f5f7fa;
-  color: #2c3e50;
+  color:  var(--base-500);
+  letter-spacing: -1px;
+  font
 }
 
 /* Login Page Styles */
@@ -22,14 +35,14 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--base-100);
 }
 
 .login-box {
-  background: white;
+  background:  var(--base-100);
   padding: 40px;
   border-radius: 10px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  
   width: 100%;
   max-width: 400px;
 }
@@ -41,7 +54,7 @@ body {
 }
 
 .login-box p {
-  color: #666;
+  color: var(--base-500);
   margin-bottom: 30px;
 }
 
@@ -73,7 +86,7 @@ body {
 .login-btn {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background:  var(--base-500);
   color: white;
   border: none;
   border-radius: 6px;
