@@ -26,7 +26,7 @@ body {
   background: #f5f7fa;
   color:  var(--base-500);
   letter-spacing: -1px;
-  font
+  font-weight: 500;
 }
 
 /* Login Page Styles */
@@ -36,15 +36,27 @@ body {
   align-items: center;
   min-height: 100vh;
   background: var(--base-100);
+  padding: 20px;
 }
 
-.login-box {
-  background:  var(--base-100);
-  padding: 40px;
-  border-radius: 10px;
-  
+.login-content {
+  display: flex;
+  background: var(--base-100);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  max-width: 900px;
   width: 100%;
-  max-width: 400px;
+}
+
+/* Left: Form */
+.login-box {
+  flex: 1;
+  padding: 40px;
+  background: var(--base-100);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .login-box h1 {
@@ -72,8 +84,8 @@ body {
 .form-group input {
   width: 100%;
   padding: 12px;
-  border: 2px solid #e1e8ed;
-  border-radius: 6px;
+  border-bottom: 2px solid #e1e8ed;
+  border-radius: 0px;
   font-size: 14px;
   transition: border-color 0.3s;
 }
@@ -86,7 +98,7 @@ body {
 .login-btn {
   width: 100%;
   padding: 14px;
-  background:  var(--base-500);
+  background: var(--base-500);
   color: white;
   border: none;
   border-radius: 6px;
@@ -113,6 +125,34 @@ body {
   margin-bottom: 20px;
   display: none;
 }
+
+/* Right: Image */
+.login-image {
+  flex: 1;
+  background: #f8f9fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Responsive: Stack on small screens */
+@media (max-width: 768px) {
+  .login-content {
+    flex-direction: column;
+  }
+
+  .login-image {
+    height: 250px;
+    display: none;
+  }
+}
+
 
 /* Dashboard Styles */
 .dashboard {
@@ -458,31 +498,38 @@ body {
   </style>
 </head>
 <body>
-  <!-- Login Page -->
-  <div id="login-page" class="login-container">
+<div id="login-page" class="login-container">
+  <div class="login-content">
     <div class="login-box">
       <h1>🔐 Admin Login</h1>
       <p>Sign in to access the dashboard</p>
-      
+
       <div id="login-error" class="error-message"></div>
-      
+
       <form id="login-form">
         <div class="form-group">
           <label for="email">Email Address</label>
           <input type="email" id="email" required autocomplete="email">
         </div>
-        
+
         <div class="form-group">
           <label for="password">Password</label>
           <input type="password" id="password" required autocomplete="current-password">
         </div>
-        
+
         <button type="submit" class="login-btn" id="login-btn">
           Sign In
         </button>
       </form>
     </div>
+
+    <!-- Right Image Section -->
+    <div class="login-image">
+      <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=800" alt="Login Illustration">
+    </div>
   </div>
+</div>
+
 
   <!-- Dashboard -->
   <div id="dashboard" class="dashboard">
