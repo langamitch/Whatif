@@ -10,14 +10,14 @@
  /* Notifier container */
   #notifier {
     position: fixed;
-    display: hidden;
+    display: none; /*display: flex;*/
     bottom: 20px;
     left: 20px;
     background-color: #fff;
     border: 1px solid #ccc;
     padding: 10px 15px;
     border-radius: 8px;
-    display: flex;
+   
     align-items: center;
     font-family: Arial, sans-serif;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
