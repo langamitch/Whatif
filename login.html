@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weally Admin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <style>
+    * {margin:0;padding:0;box-sizing:border-box;}
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      letter-spacing: -1px;
+      font-weight: 500;
+    }
+
+    /* HEADER BAR */
+    header {
+      width: 100%;
+      max-width: 1200px;
+      display: none;
+      justify-content: flex-end;
+      align-items: center;
+      background: #fff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 25px;
+      position: sticky;
+      top: 10px;
+      z-index: 10;
+    }
+
+    header button {
+      border: none;
+      background: none;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    .material-icons {
+      font-size: 26px;
+      color: #333;
+      vertical-align: middle;
+    }
+
+    #logout-btn {
+      background: #000;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    #logout-btn:hover { background: #333; }
+
+    .notif-dot {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: red;
+      display: none;
+    }
+
+    .logo {
+      position: absolute; top: 20px; left: 20px; letter-spacing: -1px; display: flex; align-items: center;
+    }
+    .logo h3 { margin-right: 10px; }
+    .logo p { color: #7f8c8d; font-size: 14px; }
+    .devider { width: 2px; height: 40px; background: #7f8c8d; margin-right: 10px; }
+    .right { position: absolute; bottom: 20px; right: 20px; color: #7f8c8d; font-size: 12px; }
+
+    /* LOGIN FORM */
+    .login-container {
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      max-width: 350px;
+      width: 100%;
+      margin-top: 80px;
+    }
+    .header-image {
+      width: 100%;
+      height: 240px;
+      background-image: url('https://images.unsplash.com/photo-1578518496391-99bc1530a2c7?auto=format&fit=crop&q=80&w=1974');
+      background-size: cover;
+      background-position: center;
+    }
+    .form-content { padding: 20px 30px; }
+    h1 { text-align: center; font-size: 32px; color: #2c3e50; margin-bottom: 10px; }
+    .subtitle { text-align: center; color: #7f8c8d; font-size: 15px; margin-bottom: 40px; }
+    .input-group { margin-bottom: 10px; }
+    input[type="email"], input[type="password"] {
+      width: 100%; padding: 10px; border: none; border-radius: 4px;
+      font-size: 16px; background: #181818; color: white; letter-spacing: -1px;
+      font-family: 'DM Sans', sans-serif; transition: all 0.3s ease;
+    }
+    input::placeholder { color: #888; }
+    input:focus { outline: none; background: #2d2d2d; }
+    .login-button {
+      width: 100%; padding: 10px; background: #000; color: white;
+      border: none; border-radius: 4px; font-size: 16px; cursor: pointer;
+      transition: all 0.3s ease; letter-spacing: -1px; font-weight: 500;
+    }
+    .login-button:hover { background: #3d3d3d; }
+
+    /* POSTS */
+    #posts-section {
+      display: none;
+      width: 100%;
+      max-width: 1200px;
+      margin-bottom: 40px;
+    }
+    #posts-section h2 {
+      margin-bottom: 20px;
+      color: #2c3e50;
+      text-align: left;
+    }
+    #posts-list {
+      display: grid;
+      gap: 15px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 768px) {
+      #posts-list {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      }
+    }
+    .post-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 15px;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: transform 0.2s ease;
+    }
+    .post-card:hover { transform: translateY(-3px); }
+    .post-card h3 { margin-bottom: 5px; font-size: 18px; color: #333; }
+    .post-card p { font-size: 15px; color: #555; margin-bottom: 8px; }
+    .post-card small { color: #999; font-size: 13px; }
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <h3>Weally</h3>
+    <div class="devider"></div>
+    <p>Database Management <br />system</p>
+  </div>
+
+  <!-- HEADER (Logout + Notification) -->
+  <header id="top-bar">
+    <button id="notif-btn" class="notif-btn" style="position:relative;">
+      <span class="material-icons">notifications</span>
+      <span class="notif-dot" id="notif-dot"></span>
+    </button>
+    <button id="logout-btn">Logout</button>
+  </header>
+
+  <!-- LOGIN FORM -->
+  <div class="login-container" id="login-container">
+    <div class="header-image"></div>
+    <div class="form-content">
+      <h1>Sign in</h1>
+      <p class="subtitle">Start building your design machine</p>
+      <form id="loginForm">
+        <div class="input-group">
+          <input type="email" id="email" placeholder="Enter your email" required />
+        </div>
+        <div class="input-group">
+          <input type="password" id="password" placeholder="Enter your password" required />
+        </div>
+        <button type="submit" class="login-button">Login</button>
+      </form>
+      <p id="loginError" style="color: red; text-align: center; margin-top: 10px;"></p>
+    </div>
+  </div>
+
+  <!-- POSTS -->
+  <div id="posts-section">
+    <h2>📋 Submitted Posts</h2>
+    <div id="posts-list">Loading posts...</div>
+  </div>
+
+  <div class="right">© 2025 Weally. All rights reserved.</div>
+  <audio id="notif-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5b01a8c1cf.mp3?filename=notification-113724.mp3"></audio>
+
+  <!-- FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDb2cl7lsypR1ZoqHGD-mKhzN_lnDcyVEQ",
+      authDomain: "website-6a5f1.firebaseapp.com",
+      projectId: "website-6a5f1",
+      storageBucket: "website-6a5f1.firebasestorage.app",
+      messagingSenderId: "510903945172",
+      appId: "1:510903945172:web:a5f5120db75c938721f841",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const postsRef = collection(db, "posts");
+
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+    const loginContainer = document.getElementById('login-container');
+    const postsSection = document.getElementById('posts-section');
+    const postsList = document.getElementById('posts-list');
+    const logoutBtn = document.getElementById('logout-btn');
+    const topBar = document.getElementById('top-bar');
+    const notifDot = document.getElementById('notif-dot');
+    const notifSound = document.getElementById('notif-sound');
+
+    let firstLoad = true;
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      loginError.textContent = "";
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        loginError.textContent = "Invalid email or password.";
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginContainer.style.display = "none";
+        postsSection.style.display = "block";
+        topBar.style.display = "flex";
+        loadPosts();
+      } else {
+        loginContainer.style.display = "block";
+        postsSection.style.display = "none";
+        topBar.style.display = "none";
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+    });
+
+    function loadPosts() {
+      onSnapshot(postsRef, (snapshot) => {
+        if (!firstLoad) {
+          notifDot.style.display = "block";
+          notifSound.play();
+        }
+        firstLoad = false;
+
+        postsList.innerHTML = "";
+        if (snapshot.empty) {
+          postsList.innerHTML = "<p>No posts available.</p>";
+          return;
+        }
+        snapshot.forEach((docSnap) => {
+          const post = docSnap.data();
+          const card = document.createElement('div');
+          card.classList.add('post-card');
+          card.innerHTML = `
+            <button class="delete-btn" data-id="${docSnap.id}">Delete</button>
+            <h3>${post.name || "Unnamed"}</h3>
+            <p>${post.suggestion || ""}</p>
+            <small>${post.timestamp ? new Date(post.timestamp.toDate()).toLocaleString() : ""}</small>
+          `;
+          postsList.appendChild(card);
+        });
+
+        document.querySelectorAll('.delete-btn').forEach((btn) => {
+          btn.addEventListener('click', async (e) => {
+            const id = e.target.dataset.id;
+            if (confirm("Delete this post?")) {
+              await deleteDoc(doc(db, "posts", id));
+            }
+          });
+        });
+      });
+    }
+
+    document.getElementById("notif-btn").addEventListener("click", () => {
+      notifDot.style.display = "none";
+    });
+  </script>
+</body>
+</html>

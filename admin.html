@@ -524,17 +524,6 @@ body {
     grid-template-columns: 1fr;
   }
 }
-.login-error {
-  background: #fee;
-  color: #b71c1c;
-  padding: 12px;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  font-size: 14px;
-  display: none;
-  border: 1px solid #f5c2c2;
-}
-
   </style>
 </head>
 <body>
@@ -546,8 +535,6 @@ body {
       <p class="subtitle">The AI for problem solvers</p>
 
       <div class="login-box">
-        <!-- Error message -->
-  <div id="loginError" class="login-error" style="display: none;"></div>
 
         <form id="login-form">
           <div class="form-group">
@@ -556,7 +543,7 @@ body {
           <div class="form-group">
             <input type="password" id="password" placeholder="Enter your password" required />
           </div>
-          <button type="submit" class="login-btn" id="login-btn">Sign in</button>
+          <button type="submit" class="login-btn" id="login-btn">Sign in </button>
         </form>
 
         <p class="privacy-text">
@@ -715,30 +702,25 @@ body {
       }, 3000);
     }
 
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
+    // Login handler
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Signing in...';
+      loginError.style.display = 'none';
 
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const loginError = document.getElementById('loginError');
-  const loginBtn = document.getElementById('loginBtn');
-
-  loginError.style.display = 'none';
-  loginBtn.disabled = true;
-  loginBtn.textContent = 'Signing in...';
-
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch (error) {
-    loginError.textContent = '⚠️ ' + (error.message || 'Login failed. Please try again.');
-    loginError.style.display = 'block';
-    console.error(error);
-  } finally {
-    loginBtn.disabled = false;
-    loginBtn.textContent = 'Sign In';
-  }
-});
-
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        loginError.textContent = getErrorMessage(error.code);
+        loginError.style.display = 'block';
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Sign In';
+      }
+    });
 
     function getErrorMessage(code) {
       const messages = {
