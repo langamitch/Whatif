@@ -583,7 +583,7 @@ option {
 
   /* Make it full-width */
   width: 100%;
-  min-height: 80vh;
+  height: 100vh;
 
   display: flex;
   justify-content: center;
@@ -609,9 +609,9 @@ option {
 .subheadline {
   font-size: 32px;
   font-weight: 700;
-  letter-spacing: -1px;
+  letter-spacing: -2px;
   line-height: 1.2em;
-  color: rgb(92, 91, 91);
+  color: rgb(130, 130, 130);
 }
 
 .button-group {
@@ -643,6 +643,9 @@ option {
   }
   .post-container {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .hero {
+    max-height: 80vh;
   }
 }
 
