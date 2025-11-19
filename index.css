@@ -400,6 +400,10 @@ button {
   margin-top: 10px;
 }
 
+.icon-only {
+  diaplay: none;
+  }
+  
 .popup-overlay {
   position: fixed;
   top: 0;
