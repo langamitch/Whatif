@@ -626,16 +626,16 @@ option {
 }
 
 .button {
-  width: fit-content;
-  padding: 15px 15px;
-  border-radius: 5px;
-  border: 1px solid rgb(255, 255, 255);
-  background-color: transparent;
-  color: white;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  margin-top: 10px;
+    width: fit-content;
+    padding: 15px 15px;
+    border-radius: 5px;
+    border: 1px solid rgb(255, 255, 255);
+    background-color: transparent;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
 @media (max-width: 768px) {
