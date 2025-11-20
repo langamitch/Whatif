@@ -19,6 +19,7 @@ const firebaseConfig = {
   storageBucket: "website-6a5f1.firebasestorage.app",
   messagingSenderId: "510903945172",
   appId: "1:510903945172:web:a5f5120db75c938721f841",
+  measurementId: "G-71P24GCLDQ"
 };
 
 // --- Global Variables ---
@@ -369,7 +370,7 @@ function addViewMoreLogic(postCard, contentSelector = ".content") {
     }
   }, 0);
 }
-
+const analytics = getAnalytics(app);
 // --- Initialize Firebase ---
 // This block runs immediately. Now it can safely call listenForPosts().
 try {
