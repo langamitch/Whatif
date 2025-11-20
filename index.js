@@ -370,7 +370,7 @@ function addViewMoreLogic(postCard, contentSelector = ".content") {
     }
   }, 0);
 }
-const analytics = getAnalytics(app);
+
 // --- Initialize Firebase ---
 // This block runs immediately. Now it can safely call listenForPosts().
 try {
