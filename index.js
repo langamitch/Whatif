@@ -109,6 +109,12 @@ function insertHashtag(tag) {
   }
 }
 
+document.getElementById("openPopupNav")
+  .addEventListener("click", () => {
+    document.getElementById("popupOverlay").style.display = "flex";
+  });
+
+
 function toggleOverlay(overlay) {
   if (overlay) {
     overlay.style.display =

@@ -170,6 +170,18 @@ nav {
   align-items: center;
   background: transparent;
 }
+.submit-site-btn {
+  padding: 8px 18px;
+  margin-right: 16px;
+  border-radius: 8px;
+  border: none;
+  background: #fff;
+  color: black;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
 
 .logo img {
   display: block;
