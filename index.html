@@ -59,7 +59,7 @@ closeButton.addEventListener('click', () => {
 });
 
   </script>
-</body>
+
 
     
     <!-- Hero 2: Gradient + Visual Tags 
@@ -81,7 +81,8 @@ for sharing app ideas</h1>
   </div>
 </section>
 -->
-<section class="hero">
+<section id="hero" class="hero">
+  <canvas id="bg-canvas"></canvas>
   <div class="hero-content">
     <h1 class="headline">Bring new app ideas to life.</h1>
     <h1 class="subheadline">Share concepts for apps the world needs—because someone might build them.</h1>
@@ -103,7 +104,213 @@ for sharing app ideas</h1>
     </div>
   </div>
 </section>
+<!-- three.js from CDN (r152 at time of writing; change if you want another version) -->
+  <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
 
+  <script>
+    (function () {
+      // ---- CONFIG: change this to your image path ----
+      const IMAGE_URL = "/assets/bg.webp";
+      // ------------------------------------------------
+
+      const canvas = document.getElementById('bg-canvas');
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      const scene = new THREE.Scene();
+
+      const camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1); // simple unit camera for full-screen quad
+
+      // geometry for full-screen quad
+      const geometry = new THREE.BufferGeometry();
+      const verts = new Float32Array([
+        -1,-1,  1,-1,  -1,1,
+        -1,1,   1,-1,  1,1
+      ]);
+      geometry.setAttribute('position', new THREE.BufferAttribute(verts, 2));
+
+      // UVs
+      const uvs = new Float32Array([
+        0,0, 1,0, 0,1,
+        0,1, 1,0, 1,1
+      ]);
+      geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+
+      // Shader material
+      const material = new THREE.ShaderMaterial({
+        uniforms: {
+          u_time: { value: 0 },
+          u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+          u_mouse: { value: new THREE.Vector2(0.5, 0.5) }, // normalized (0-1)
+          u_targetMouse: { value: new THREE.Vector2(0.5, 0.5) }, // for smoothing
+          u_texture: { value: null },
+          u_strength: { value: 0.35 }, // distortion strength
+          u_radius: { value: 0.25 } // radius of influence (normalized)
+        },
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = vec4(position.xy, 0.0, 1.0);
+          }
+        `,
+        fragmentShader: `
+          precision highp float;
+          varying vec2 vUv;
+          uniform sampler2D u_texture;
+          uniform vec2 u_resolution;
+          uniform float u_time;
+          uniform vec2 u_mouse;       // normalized pointer
+          uniform float u_strength;   // global strength of displacement
+          uniform float u_radius;     // radius of influence (0..1)
+
+          // 2D rotation helper
+          mat2 rot(float a){ float c=cos(a), s=sin(a); return mat2(c,-s,s,c); }
+
+          void main() {
+            // normalize coordinates (0..1)
+            vec2 uv = vUv;
+
+            // distance from pointer, with aspect correction
+            vec2 aspect = vec2(u_resolution.x / u_resolution.y, 1.0);
+            vec2 mouse = u_mouse;
+            vec2 diff = (uv - mouse) * aspect;
+            float dist = length(diff);
+
+            // falloff: smoothstep so influence is smooth
+            float falloff = smoothstep(u_radius, 0.0, dist);
+
+            // time-based ripple + noise-like flow
+            float t = u_time * 0.6;
+            // directional wave
+            float wave = sin((uv.y + t) * 6.0) * 0.003 * falloff;
+            // radial wobble near mouse
+            float wobble = sin(dist * 40.0 - t * 4.0) * 0.02 * falloff;
+
+            // rotation displacement around the pointer
+            vec2 dir = normalize(diff + 0.0001);
+            vec2 perp = vec2(-dir.y, dir.x);
+
+            // combine displacements
+            vec2 displacement = (perp * wobble + vec2(wave)) * u_strength;
+
+            // subtle parallax: shift uv to sample texture
+            vec2 finalUV = uv + displacement;
+
+            // sample with a gentle vignetting on the edges for depth
+            vec4 color = texture2D(u_texture, finalUV);
+
+            // optional desaturation near edges for mood
+            float v = smoothstep(0.0, 0.7, dist);
+            color.rgb *= mix(1.0, 0.9, v * 0.35);
+
+            gl_FragColor = color;
+          }
+        `,
+        transparent: true
+      });
+
+      const mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      // Load texture
+      const loader = new THREE.TextureLoader();
+      loader.setCrossOrigin('');
+      loader.load(IMAGE_URL,
+        function (tex) {
+          tex.minFilter = THREE.LinearFilter;
+          tex.magFilter = THREE.LinearFilter;
+          tex.encoding = THREE.sRGBEncoding;
+          material.uniforms.u_texture.value = tex;
+          render(); // start after texture load (render once asap)
+        },
+        undefined,
+        function (err) {
+          console.error("Error loading image:", err);
+        });
+
+      // pointer handling with smoothing
+      const pointer = { x: 0.5, y: 0.5 };
+      const target = { x: 0.5, y: 0.5 };
+
+      function onPointerMove(e) {
+        let x, y;
+        if (e.touches && e.touches.length > 0) {
+          x = e.touches[0].clientX;
+          y = e.touches[0].clientY;
+        } else {
+          x = e.clientX;
+          y = e.clientY;
+        }
+        const rect = renderer.domElement.getBoundingClientRect();
+        // normalize 0..1
+        target.x = (x - rect.left) / rect.width;
+        target.y = 1.0 - (y - rect.top) / rect.height; // flip Y to match GL coordinates used in shader
+      }
+
+      // smoothing lerp
+      function updatePointerSmooth() {
+        pointer.x += (target.x - pointer.x) * 0.12;
+        pointer.y += (target.y - pointer.y) * 0.12;
+        material.uniforms.u_mouse.value.set(pointer.x, pointer.y);
+      }
+
+      // Attach events
+      const hero = document.getElementById('hero');
+      hero.addEventListener('mousemove', onPointerMove, { passive: true });
+      hero.addEventListener('touchstart', onPointerMove, { passive: true });
+      hero.addEventListener('touchmove', onPointerMove, { passive: true });
+      window.addEventListener('resize', onWindowResize);
+
+      function onWindowResize() {
+        const w = hero.offsetWidth;
+        const h = hero.offsetHeight;
+        renderer.setSize(w, h, false);
+        material.uniforms.u_resolution.value.set(w, h);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      }
+
+      // initialize size
+      onWindowResize();
+
+      // render loop
+      let start = performance.now();
+      function render(now) {
+        const t = (now - start) / 1000;
+        material.uniforms.u_time.value = t;
+        updatePointerSmooth();
+
+        renderer.render(scene, camera);
+        // use rAF
+        requestAnimationFrame(render);
+      }
+
+      // kick off loop once texture is loaded in loader callback
+      // but also set an initial render in case texture is already cached
+      function tickIfTextureReady() {
+        if (material.uniforms.u_texture.value) {
+          requestAnimationFrame(render);
+        } else {
+          // try again shortly if texture not ready (safe fallback)
+          setTimeout(tickIfTextureReady, 100);
+        }
+      }
+      tickIfTextureReady();
+
+      // Optional: reduce effect for low-power devices
+      // You could detect save-data / mobile and reduce u_strength, u_radius
+      // Example:
+      if (navigator.connection && (navigator.connection.saveData || navigator.connection.effectiveType === '2g')) {
+        material.uniforms.u_strength.value = 0.12;
+        material.uniforms.u_radius.value = 0.18;
+      }
+
+      // Expose for debugging
+      window._apptreeShader = {
+        material, renderer, scene, camera
+      };
+
+    })();
+  </script>
 <style>
 
 .ad-container {

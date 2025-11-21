@@ -163,6 +163,7 @@ body {
   padding: 10px;
 }
 nav {
+  z-index: 10;
   width: 100vw;
   display: flex;
   justify-content: space-between;
@@ -577,32 +578,56 @@ option {
   width: 960px;
 }
 
-/* Only center-align inside the hero section */
+/* Only center-align inside the hero section
 .hero {
   padding: 6rem 2rem;
   text-align: center;
 
-  /* Background image */
-  background-image: url('/assets/bg.webp'); /* change to your image */
+
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 
-  /* Make it full-width */
+
   width: 100%;
   height: 100vh;
 
   display: flex;
   justify-content: center;
   align-items: center;
-}
+} */
+
+    .hero {
+      position:relative;
+      height:100vh;
+      width:100%;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: white;
+      font-family: Inter, system-ui, -apple-system, Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
 
 /* Wrapped container that stays max-width */
 .hero-content {
-  max-width: 800px;
-  margin: 0 auto;
+      position:relative;
+      z-index:1;
+      text-align:center;
+      padding: 0 20px;
+      max-width:900px;
+      pointer-events:none; /* allow interactions to pass to canvas; change if you have buttons */
 }
-
+  #bg-canvas {
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      display: block;
+      z-index: 0;
+    }
 
 .headline {
   font-size: 64px;
@@ -611,6 +636,7 @@ option {
   line-height: 3.5rem;
   margin-bottom: 1rem;
   color: #ffffff;
+  
 }
 
 .subheadline {
