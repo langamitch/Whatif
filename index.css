@@ -181,17 +181,20 @@ nav {
   font-size: 14px;
   cursor: pointer;
   transition: 0.25s ease;
+  mix-blend-mode: difference;
 }
 
 .logo img {
   display: block;
   object-fit: contain;
+  mix-blend-mode: difference;
 }
 
 .search-icon {
   font-size: 40px;
   color: white;
   cursor: pointer;
+  mix-blend-mode: difference;
 }
 #search-input input:focus {
   outline: none;
