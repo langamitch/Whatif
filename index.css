@@ -169,6 +169,8 @@ nav {
   justify-content: space-between;
   align-items: center;
   background: transparent;
+  
+  isolation: isolate; 
 }
 .submit-site-btn {
   padding: 8px 18px;
