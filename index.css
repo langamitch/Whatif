@@ -614,7 +614,7 @@ option {
 
     .hero {
       position:relative;
-      height:100vh;
+      height:90vh;
       width:100%;
       overflow:hidden;
       display:flex;
